@@ -1,0 +1,25 @@
+/* CaRtOoNz CSS Styling (Yes, we are that good!) */
+
+body {
+	background: #000 url(../images/bg-texture.jpg) repeat-x; 
+}
+	
+.container {
+	width: 943px; 
+	margin: 0 auto;
+	background: url(../images/mascot-bg.png) no-repeat;
+}
+
+.mascot {
+	width:316px;
+	height:591px;
+	margin: 10px auto 20px auto;
+}
+
+.boxes {
+	width:315px;
+	height:245px;
+	margin-left:0;
+	margin-bottom:0;	
+}
+
