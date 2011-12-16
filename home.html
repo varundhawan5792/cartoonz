@@ -3,6 +3,21 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>CARTOONZ</title>
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+	var height;
+	if( typeof( window.innerWidth ) == 'number' )
+		height = window.innerHeight - 60;
+	else if( document.documentElement && document.documentElement.clientHeight )
+		height = document.documentElement.clientHeight - 60;
+	else if( document.body && document.body.clientHeight )
+		height = document.body.clientHeight - 60;
+	//alert(height);
+	$("#css-table .col").height(height);
+	$(".resize").height(.80*height);
+});
+</script>
 <style type="text/css">
 <!--
 body {
@@ -12,6 +27,7 @@ body {
 }
 
 /** Scrollbar **/
+
 ::-webkit-scrollbar {
 	background:transparent;
 	width:8px;
@@ -31,6 +47,7 @@ body {
 }
 ::-webkit-scrollbar-corner {	
 }
+
 
 /** Top Bar **/
 .topbar {
@@ -78,7 +95,7 @@ body {
 }
 #lane2 {
 	height:680px;
-	width:25.5%;
+	width:26.5%;
 	background:#f6f6f6;
 	border:1px solid #cccccc;
 	border-top:none;
@@ -93,7 +110,7 @@ body {
 }
 #lane3 {
 	height:680px;
-	width:28.5%;
+	width:30.5%;
 	background:#f6f6f6;
 	border:1px solid #cccccc;
 	border-top:none;
@@ -107,8 +124,8 @@ body {
 	box-shadow: -2px 0px 11px 1px rgba(0, 0, 0, 0.1);
 }
 #lane4 {
-	height:680px;
-	width:27%;
+	height:0px !important;
+	width:27.5%;
 	background:#eeeeee;
 	border:1px solid #cccccc;
 	border-top:none;
@@ -118,10 +135,10 @@ body {
 	z-index:1000;
 }
 #container {
-	width:100%; 
+	width:98%; 
 	overflow-x:hidden; 
-	overflow-y:auto;
-	height:200px;
+	overflow-y:scroll;
+	height:250px;
 }
 
 /** CSS for Lane 1 **/
@@ -221,33 +238,21 @@ ul#other_list li a.avi {
 	background:url(images/icons/avi-icon.png) left no-repeat;
 }
 ul#other_list li a.playlist {
-	background:url(images/icons/playlist-icon.png) left no-repeat;
+	background:url(images/icons/file-icon.png) left no-repeat;
 }
 
 
-/** File Information **/
-#mime_type {
-	text-align:center;
-}
-#mime_type .space {
-	height:40px;
-}
-#mime_type .avi {
-	width:128px;
-	height:128px;
-	margin:auto;
-	background:url(images/icons/avi-icon-big.png) center no-repeat;
-}
+
 -->
 </style>
 </head>
 
 <body>
-	<div class="topbar">
+	<div class="topbar" id="top_bar">
     </div>
     <div id="css-table">
 			<div class="col" id="lane1">
-             <div id="container">
+             <div class="resize">
               <ul id="main_list">
               	<li>
                    <a class="home">Home</a>
@@ -265,7 +270,7 @@ ul#other_list li a.playlist {
              </div> 
             </div>
 			<div class="col" id="lane2">
-             <div id="container">
+             <div id="container" class="resize">
               <ul id="other_list">
               	<li>
                    <a class="folder">Don 2</a>
@@ -295,6 +300,7 @@ ul#other_list li a.playlist {
              </div>
             </div>
 			<div class="col" id="lane3">
+             <div id="container" class="resize">
                <ul id="other_list">
               	<li>
                    <a class="folder">Screens</a>
@@ -309,31 +315,14 @@ ul#other_list li a.playlist {
                    <a class="playlist">Ladies vs Ricky Bahl.srt</a>
                 </li>
               </ul>
+             </div> 
             </div>
 			<div class="col" id="lane4">
-               <div id="mime_type" style="float:right;">
-               		<img src="images/icons/avi-icon-big.png" />
-               </div>
-               <div class="file_info">
-               		<p>Ladies vs Ricky Bahl</p>
-                    <p>video/avi</p>
-                    <p>770 mb</p>
-                    <p>16/12/2011 8:16 PM</p>
-               </div>
-               <div class="options">
-               
-               </div>
+               <iframe src="fileinfo.html" style="width:100%;height:350px;overflow:hidden;margin-bottom:-350px;" frameborder="0" scrolling="no">
+               </iframe>
             </div>
 	</div>
-    <!--
-        <div class="lane1">
-        </div>
-        <div class="lane2">
-        </div>
-        <div class="lane3">
-        </div>
-        <div class="lane4">
-        </div>
-	-->
+    <div id='flexcroll-init'></div> 
+
 </body>
 </html>
