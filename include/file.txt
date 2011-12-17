@@ -1,0 +1,33 @@
+[xDR] Zindagi Na Milegi Dobara [2011-MP3-VBR-320Kbps].nfo, INSERT INTO music_files(parent_id, name) values((SELECT id FROM music_folders WHERE name="Zindagi Na Milegi Dobara [2011-MP3-VBR-320Kbps] - xDR" and parent_id is NULL),"[xDR] Zindagi Na Milegi Dobara [2011-MP3-VBR-320Kbps].nfo")
+$RECYCLE.BIN, INSERT INTO music_files(parent_id, name) values((SELECT id FROM music_folders WHERE name="" and parent_id is NULL),"$RECYCLE.BIN")
+Android, INSERT INTO music_files(parent_id, name) values((SELECT id FROM music_folders WHERE name="" and parent_id is NULL),"Android")
+Backups, INSERT INTO music_files(parent_id, name) values((SELECT id FROM music_folders WHERE name="" and parent_id is NULL),"Backups")
+BlueJ, INSERT INTO music_files(parent_id, name) values((SELECT id FROM music_folders WHERE name="" and parent_id is NULL),"BlueJ")
+Downloads, INSERT INTO music_files(parent_id, name) values((SELECT id FROM music_folders WHERE name="" and parent_id is NULL),"Downloads")
+eBooks, INSERT INTO music_files(parent_id, name) values((SELECT id FROM music_folders WHERE name="" and parent_id is NULL),"eBooks")
+etc, INSERT INTO music_files(parent_id, name) values((SELECT id FROM music_folders WHERE name="" and parent_id is NULL),"etc")
+Google Python Class, INSERT INTO music_files(parent_id, name) values((SELECT id FROM music_folders WHERE name="" and parent_id is NULL),"Google Python Class")
+JUITW, INSERT INTO music_files(parent_id, name) values((SELECT id FROM music_folders WHERE name="" and parent_id is NULL),"JUITW")
+kubuntu-11.10-dvd-i386.iso, INSERT INTO music_files(parent_id, name) values((SELECT id FROM music_folders WHERE name="" and parent_id is NULL),"kubuntu-11.10-dvd-i386.iso")
+Lab Software, INSERT INTO music_files(parent_id, name) values((SELECT id FROM music_folders WHERE name="" and parent_id is NULL),"Lab Software")
+Movies, INSERT INTO music_files(parent_id, name) values((SELECT id FROM music_folders WHERE name="" and parent_id is NULL),"Movies")
+msdownld.tmp, INSERT INTO music_files(parent_id, name) values((SELECT id FROM music_folders WHERE name="" and parent_id is NULL),"msdownld.tmp")
+Music, INSERT INTO music_files(parent_id, name) values((SELECT id FROM music_folders WHERE name="" and parent_id is NULL),"Music")
+passwords.txt, INSERT INTO music_files(parent_id, name) values((SELECT id FROM music_folders WHERE name="" and parent_id is NULL),"passwords.txt")
+pd, INSERT INTO music_files(parent_id, name) values((SELECT id FROM music_folders WHERE name="" and parent_id is NULL),"pd")
+Personal, INSERT INTO music_files(parent_id, name) values((SELECT id FROM music_folders WHERE name="" and parent_id is NULL),"Personal")
+Pictures, INSERT INTO music_files(parent_id, name) values((SELECT id FROM music_folders WHERE name="" and parent_id is NULL),"Pictures")
+Projects, INSERT INTO music_files(parent_id, name) values((SELECT id FROM music_folders WHERE name="" and parent_id is NULL),"Projects")
+Reverie, INSERT INTO music_files(parent_id, name) values((SELECT id FROM music_folders WHERE name="" and parent_id is NULL),"Reverie")
+Softwares, INSERT INTO music_files(parent_id, name) values((SELECT id FROM music_folders WHERE name="" and parent_id is NULL),"Softwares")
+System Volume Information, INSERT INTO music_files(parent_id, name) values((SELECT id FROM music_folders WHERE name="" and parent_id is NULL),"System Volume Information")
+The Dewarists, INSERT INTO music_files(parent_id, name) values((SELECT id FROM music_folders WHERE name="" and parent_id is NULL),"The Dewarists")
+tutorial, INSERT INTO music_files(parent_id, name) values((SELECT id FROM music_folders WHERE name="" and parent_id is NULL),"tutorial")
+ubuntu-10.04.3-desktop-i386.iso, INSERT INTO music_files(parent_id, name) values((SELECT id FROM music_folders WHERE name="" and parent_id is NULL),"ubuntu-10.04.3-desktop-i386.iso")
+ubuntu-11.10-desktop-i386.iso, INSERT INTO music_files(parent_id, name) values((SELECT id FROM music_folders WHERE name="" and parent_id is NULL),"ubuntu-11.10-desktop-i386.iso")
+ubuntu-11.10-server-amd64.iso, INSERT INTO music_files(parent_id, name) values((SELECT id FROM music_folders WHERE name="" and parent_id is NULL),"ubuntu-11.10-server-amd64.iso")
+ubuntu-11.10-server-i386.iso, INSERT INTO music_files(parent_id, name) values((SELECT id FROM music_folders WHERE name="" and parent_id is NULL),"ubuntu-11.10-server-i386.iso")
+Videos, INSERT INTO music_files(parent_id, name) values((SELECT id FROM music_folders WHERE name="" and parent_id is NULL),"Videos")
+wamp, INSERT INTO music_files(parent_id, name) values((SELECT id FROM music_folders WHERE name="" and parent_id is NULL),"wamp")
+Xming-mesa-6-9-0-31-setup.exe, INSERT INTO music_files(parent_id, name) values((SELECT id FROM music_folders WHERE name="" and parent_id is NULL),"Xming-mesa-6-9-0-31-setup.exe")
+

@@ -1,56 +1,154 @@
 <?php
 
+/*
+$query = "SELECT * FROM base_url WHERE category = 'music'";
+$result = executeQuery($query);
+$row = mysql_fetch_array($result);
+//echo $row["url"].', '. basename($row["url"]);
+*/
 
-getDirectory('X:/wamp/www/songs', '10', 'music');
+//getDirectory($row["url"], basename($row["url"]),  '10', 'music');
 
-function getDirectory( $path = '.', $level = 0, $dbname){ 
+class dbOperations{
 	
-    $ignore = array( 'cgi-bin', '.', '..', '.svn' ); 
-    $dh = @opendir( $path ); 
-    while( false !== ( $file = readdir( $dh ) ) ){ 
-        if( !in_array( $file, $ignore ) && isAllowed($file)){ 
-        // Check that this file is not to be ignored 
-            $spaces = str_repeat( '&nbsp;&nbsp;', ( $level * 2 ) ); 
-            if( is_dir( "$path/$file" ) ){ 
-               // Its a directory, so we need to keep reading down... 
-               //echo "$spaces Folder DB: ".basename($path).", $file, $path/$file<br/>";
-			   $basedir = basename($path);
-			   $url = $path.'/'.$file;
-			   $record = "\r\n'$basedir','$file','$url'";
-			   if(strpos(fileRead($dbname."_folders.txt"), $record) == false){
- 			      $query = "INSERT INTO {$dbname}_folders(parent_name, name, url) values('$basedir','$file','$url')";
-  			      executeQuery($query);
-			      writeFile($dbname."_folders.txt", $record);
-			   }
-               getDirectory( "$path/$file", ($level+1), $dbname);
-			   //echo "<br/>Folder path = '$path' added to <br/>database = $dbname";
-            } 
-			else { 
-               //echo "$spaces File DB: ".basename($path).", $file<br />";
-			   $basedir = basename($path);
-			   $record = "\r\n'$basedir','$file'";
-			   if(strpos(fileRead($dbname."_files.txt"), $record) == false){
-				   $query = "INSERT INTO {$dbname}_files(parent_name, name) values('$basedir','$file')";
-				   executeQuery($query);
-			   	   writeFile($dbname."_files.txt", $record);
-			   }
-            } 
-        } 
-    } 
-    closedir( $dh ); 
-    // Close the directory handle 
-	echo "<br/>Files added from <br/>path = '$path' to <br/>database = $dbname";
-} 
+	function updateDb($category){
+		
+		getDirectory($row["url"], basename($row["url"]),  '10', 'music');
+	}
+	
+	function getFileList($category){
+		
+		switch($category){
+			case 'music':
+				break;
+			
+		}
+	}
+	
+	function getDirectory( $path, $basepath, $level = 0, $dbname){ 
+		
+		$ignore = array( 'cgi-bin', '.', '..', '.svn' ); 
+		$dh = @opendir( $path ); 
+		while( false !== ( $file = readdir( $dh ) ) ){ 
+			if( !in_array( $file, $ignore ) && isAllowed($file)){ 
+			
+				$spaces = str_repeat( '&nbsp;&nbsp;', ( $level * 2 ) ); 
+				if( is_dir( "$path/$file" ) ){ 
+				   
+				   $basedir = basename($path);
+				   $url = $path.'/'.$file;
+				   //echo "$basedir, $url, $basepath<br/>";		   
+				   $query = "SELECT * FROM {$dbname}_folders WHERE name like \"$file\"";
+				   //echo "$query<br/>";
+				   $result = executeQuery($query);
+				   if(mysql_num_rows($result) == 0)
+				   {
+					   date_default_timezone_set('Asia/Calcutta');
+					   $date = date(filemtime($url)); //"F d Y H:i:s."
+					   if($basedir == $basepath){
+						   $query = "INSERT INTO {$dbname}_folders(base_id, name, date_added) values((SELECT id FROM base_url WHERE name=\"$basedir\"), \"$file\", '$date')";
+					   }
+					   else{
+							$query = "INSERT INTO {$dbname}_folders(base_id, parent_id, name, date_added) values((SELECT id FROM base_url WHERE name=\"$basedir\"), (SELECT id FROM {$dbname}_folders as {$dbname} WHERE name=\"$basedir\"), \"$file\", '$date')";   
+							//echo "$query<br/>";
+					   }
+					   executeQuery($query);
+				   }
+				   getDirectory( "$path/$file", $basepath, ($level+1), $dbname);
+				   
+				} 
+				else { 
+	
+				   $basedir = basename($path);
+				   $dirname = basename(dirname($path));
+				   
+				   $parent1 = $basedir;
+				   $parent2 = $dirname;
+				   if($parent2 == $basepath){
+						$query = "SELECT id FROM base_url WHERE name=\"$parent2\"";
+						$result = executeQuery($query);
+						$row = mysql_fetch_array($result);
+						$base_id = $row["id"];
+				   }
+					else
+						$base_id = "NULL";
+				   
+				   if($parent2 != $basepath)
+					   $query_parent = "SELECT id FROM {$dbname}_folders WHERE name=\"$parent1\" and parent_id=(SELECT id FROM {$dbname}_folders WHERE name=\"$parent2\")";
+				   else   
+					   $query_parent = "SELECT id FROM {$dbname}_folders WHERE name=\"$parent1\" and parent_id is NULL";
+				   $query = "SELECT * FROM {$dbname}_files WHERE parent_id=($query_parent) and name=\"$file\"";
+				   //writeFile("file.txt", "$file, $query\r\n", "a+");
+				   $result = executeQuery($query);
+				   if(mysql_num_rows($result) == 0)
+				   {
+					   //$query_parent = "SELECT id FROM {$dbname}_folders WHERE name=\"$parent1\" and parent_id=(SELECT id FROM {$dbname}_folders WHERE name=\"$parent2\")";
+					   $query = "INSERT INTO {$dbname}_files(parent_id, name) values(($query_parent),\"$file\")";
+					   writeFile("file.txt", "$file, $query\n\r", "a+");
+					   executeQuery($query);
+					   //echo "$file<br/>";
+				   }
+				} 
+			} 
+		} 
+		closedir( $dh ); 
+		// Close the directory handle 
+		// echo "<br/>Files added from <br/>path = '$path' to <br/>database = $dbname";
+	} 
+	
+	function shortText($text, $length) {
+		if( strlen($text) > $length ) return substr(preg_replace("/(<\/?)(\w+)([^>]*>)/", "", $text), 0, $length)."...";
+		return preg_replace("/(<\/?)(\w+)([^>]*>)/", "", $text);
+	}
+	
+	function writeFile($file, $data, $mode="a+"){
+		$fp = fopen($file, $mode);
+		flock($fp, LOCK_EX);
+		$i = 0;
+		fwrite($fp, $data);
+		flock($fp, LOCK_UN);
+		fclose($fp);
+	}
+	
+	function fileRead($dataFile){
+		
+		  $fp = fopen($dataFile,"r");
+		  $temp="";
+		  while(!feof($fp))
+		  {
+			$temp += fgets($fp);
+		  }
+		  fclose($fp);
+		  return $temp;
+	}
+}
 
+function get_data($url)
+{
+	$ch = curl_init();
+	$timeout = 5;
+	curl_setopt($ch, CURLOPT_TIMEOUT, 5000);
+	curl_setopt($ch, CURLOPT_URL, $url);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	$data = curl_exec($ch);
+	curl_close($ch);
+	return $data;
+}
+
+function shortText($text, $length) {
+	if( strlen($text) > $length ) return substr(preg_replace("/(<\/?)(\w+)([^>]*>)/", "", $text), 0, $length)."...";
+	return preg_replace("/(<\/?)(\w+)([^>]*>)/", "", $text);
+}
+					
 function executeQuery($query){
 	include('connectDB.php');
-	$result=mysql_query($query,$con);
+	$result = mysql_query($query,$con);
 	mysql_close($con);
 	return $result;
 }
 
-function writeFile($file, $data){
-	$fp = fopen($file, "a+");
+function writeFile($file, $data, $mode="a+"){
+	$fp = fopen($file, $mode);
 	flock($fp, LOCK_EX);
 	$i = 0;
 	fwrite($fp, $data);

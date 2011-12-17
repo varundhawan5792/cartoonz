@@ -4,19 +4,35 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>CARTOONZ</title>
 <script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/functions.js"></script>
+
 <script type="text/javascript">
 $(document).ready(function(){
 	var height;
 	if( typeof( window.innerWidth ) == 'number' )
-		height = window.innerHeight - 60;
+		height = window.innerHeight - 50;
 	else if( document.documentElement && document.documentElement.clientHeight )
-		height = document.documentElement.clientHeight - 60;
+		height = document.documentElement.clientHeight - 50;
 	else if( document.body && document.body.clientHeight )
-		height = document.body.clientHeight - 60;
+		height = document.body.clientHeight - 50;
 	//alert(height);
 	$("#css-table .col").height(height);
-	$(".resize").height(.90*height);
+	$(".resize").height(.88*height);
+	loadMusic();
 });
+$(window).resize(function(){
+	var height;
+	if( typeof( window.innerWidth ) == 'number' )
+		height = window.innerHeight - 50;
+	else if( document.documentElement && document.documentElement.clientHeight )
+		height = document.documentElement.clientHeight - 50;
+	else if( document.body && document.body.clientHeight )
+		height = document.body.clientHeight - 50;
+	//alert(height);
+	$("#css-table .col").height(height);
+	$(".resize").height(.88*height);
+	loadMusic();
+})
 </script>
 <style type="text/css">
 <!--
@@ -24,10 +40,40 @@ body {
 	margin:0px;
 	overflow:hidden;
 	font:Arial, Helvetica, sans-serif;
+	scrollbar-face-color:#c0c0c0;
+    scrollbar-arrow-color:#FFFFFF;
+    scrollbar-track-color:#F6F6F6;
+	
+	scrollbar-highlight-color: #c0c0c0;
+	scrollbar-shadow-color: #c0c0c0; 
+	scrollbar-3dlight-color: #f6f6f6;
+	scrollbar-darkshadow-color: #f6f6f6;
+}
+
+.ellipsis span {
+
+   white-space:nowrap;
+   text-overflow:ellipsis; /* for internet explorer */
+   overflow:hidden;
+   width:190px;
+   display:block;
+}
+
+html>body .ellipsis {
+   clear:both;
+}
+
+html>body .ellipsis span:after {
+   content: "...";
+}
+
+html>body .ellipsis span {
+   max-width:180px;
+   width:auto !important;
+   float:left;
 }
 
 /** Scrollbar **/
-
 ::-webkit-scrollbar {
 	background:transparent;
 	width:8px;
@@ -139,6 +185,7 @@ body {
 	overflow-x:hidden; 
 	overflow-y:scroll;
 	height:250px;
+	margin-bottom:10px;
 }
 
 /** CSS for Lane 1 **/
@@ -198,7 +245,14 @@ ul#other_list, ul#other_list ul, ul#other_list li {
 	list-style-type: none;
 }
 ul#other_list li {
-
+	white-space: nowrap;
+	width: 100%;
+	text-overflow:ellipsis;
+	-o-text-overflow: ellipsis;  
+    -ms-text-overflow: ellipsis; 
+	overflow:hidden;
+	white-space:nowrap;
+	
 }
 ul#other_list li:hover {
 	text-shadow:1px 1px #eee;
@@ -221,9 +275,18 @@ ul#other_list li a {
 	padding: 5px;
 	padding-left:35px;
 	margin-left:15px;
+	text-overflow:ellipsis;
+	-o-text-overflow: ellipsis;  
+    -ms-text-overflow: ellipsis; 
+	overflow:hidden;
+	white-space:nowrap;
+	width: 290px;
 }
 ul#other_list li a.folder {
 	background:url(images/icons/folder-icon.png) left no-repeat;
+	text-overflow:ellipsis;
+	overflow:hidden;
+	white-space:nowrap;
 }
 ul#other_list li a.music {
 	background:url(images/icons/music-icon.png) left no-repeat;
@@ -240,7 +303,70 @@ ul#other_list li a.avi {
 ul#other_list li a.playlist {
 	background:url(images/icons/file-icon.png) left no-repeat;
 }
-
+#loader {
+	text-align: center;
+	background: white;
+	width: 90%;
+	margin: auto;
+	margin-bottom:5px;
+	margin-top:5px;
+	padding: 3px;
+	border: 1px solid #CCC;
+	border-radius:3px;
+	-webkit-border-radius:3px;
+	-moz-border-radius:3px;
+	-o-border-radius:3px;
+	box-shadow:0px 1px 3px 1px rgba(0,0,0,0.1);
+	-webkit-box-shadow:0px 1px 3px 1px rgba(0,0,0,0.1);
+	-moz-box-shadow:0px 1px 3px 1px rgba(0,0,0,0.1);
+	-o-box-shadow:0px 1px 3px 1px rgba(0,0,0,0.1);
+	opacity: 0.8;
+	color: #666;
+	font-variant:small-caps;
+	display:none;
+}
+#form {
+	width:90%;
+	height:12%;
+	background:#3e3e3e;
+	margin:auto;
+	margin-top:15%;
+	text-align:center;
+	padding-top:15px;
+	-webkit-border-radius:5px;
+	-moz-border-radius:5px;
+	-o-border-radius:5px;
+	box-shadow:0px -3px 12px 1px rgba(0,0,0,0.2);
+	-webkit-box-shadow:0px -3px 12px 1px rgba(0,0,0,0.2);
+	-moz-box-shadow:0px -3px 12px 1px rgba(0,0,0,0.2);
+	-o-box-shadow:0px -3px 12px 1px rgba(0,0,0,0.2);
+}
+.form_vis {
+	transition: all 0.5s ease-in-out;
+	-moz-transition: all 0.5s ease-in-out; 
+	-webkit-transition: all 0.5s ease-in-out; 
+	-o-transition: all 0.5s ease-in-out;  
+}
+.form_vis:hover {
+	background:#000000;
+	transition: all 0.5s ease-in-out;
+	-moz-transition: all 0.5s ease-in-out; 
+	-webkit-transition: all 0.5s ease-in-out; 
+	-o-transition: all 0.5s ease-in-out;  
+}
+#form input {
+	-webkit-border-radius:3px;
+	-moz-border-radius:3px;
+	-o-border-radius:3px;
+	box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+	-moz-box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+	-webkit-box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+	-o-box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+	color: #666;
+	border:1px solid #ccc;
+	padding:3px 5px;
+	height:32%;
+}
 
 
 -->
@@ -271,32 +397,17 @@ ul#other_list li a.playlist {
             </div>
 			<div class="col" id="lane2">
              <div id="container" class="resize">
-              <div style="text-align:center">
-                 <!-- <img src="images/ajax-loader1.gif"> -->
+              <div id="loader" style="text-align:center;">
+                 <img src="images/ajax-loader1.gif">&nbsp;&nbsp;just a second, getting it for you!
               </div>   
               <ul id="other_list">
-              	<?php
-				    function shortText($text, $length) {
-						if( strlen($text) > $length ) return substr(preg_replace("/(<\/?)(\w+)([^>]*>)/", "", $text), 0, $length)."...";
-						return preg_replace("/(<\/?)(\w+)([^>]*>)/", "", $text);
-					}
-					include('include/connectDB.php');
-					$query = "SELECT * FROM music_folders WHERE parent_name='songs'";
-					$result=mysql_query($query,$con);
-					if(mysql_num_rows($result) != 0)
-					{
-						while($row = mysql_fetch_array($result))
-						{
-							echo '<li>
-									   <a class="folder">'.
-									   shortText($row["name"], 30).'</a>
-  								  </li>';
-						}
-					}
-				?>
-                
+              	<li><a>Oh, maybe you havn't selected anything!</a></li>
               </ul>
+              
              </div>
+             <div id="form" style="display:none;">
+              	<input id="search" type="text" style="width:80%;margin:auto;" value="Search" alt="Search">	
+              </div>
             </div>
 			<div class="col" id="lane3">
              <div id="container" class="resize">
@@ -321,7 +432,6 @@ ul#other_list li a.playlist {
                </iframe>
             </div>
 	</div>
-    <div id='flexcroll-init'></div> 
 
 </body>
 </html>
