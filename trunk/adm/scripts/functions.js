@@ -31,35 +31,3 @@ return this.each(function(){if(!c.data("bPopup")){o.modal&&n.css(u()).appendTo(o
 			});
 		});
 	
-// Charting script
-
-$(document).ready(function(){
- 	$('table.pie').visualize({type: 'pie', height: '300px', width: '620px'});
-	$('table.bar').visualize({type: 'bar', height: '300px', width: '620px'});
-	$('table.area').visualize({type: 'area', height: '300px', width: '620px'});
-	$('table.line').visualize({type: 'line', height: '300px', width: '620px'});
-});
-		
-// Tab Switching
-
-	$(document).ready(function(){
-		$("#tabs, #graphs").tabs();
-	});
-
-// Select all checkboxes
-
-	$(document).ready(function(){
-      $("#checkboxall").click(function()
-      {
-      var checked_status = this.checked;
-      $("input[name=checkall]").each(function() {
-      this.checked = checked_status;
-      });
-      });
-      });
-
-// Rich text editor/WYSIWYG
-
-	$(document).ready(function() {
-			$('#wysiwyg').wysiwyg();
-		});
