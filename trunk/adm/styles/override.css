@@ -1,0 +1,28 @@
+/* CARTOONZ ACP Styling */
+
+	.contentcontainer .altheading {
+		background: #00789F url(../img/bg_heading_alt.png); 
+		border: 1px solid #00789F; 
+		color: #fff; 
+		text-shadow: 
+		1px 1px 1px #2D738A;
+	}
+
+	/* Navigation Styling */
+			
+	ul#nav li a.heading, a.collapsed, a.expanded, ul.navigation li.selected{border-bottom: 1px solid #006F93; border-top: 1px solid #2DABD5; text-shadow: 1px 1px 1px #0D2C35; background: url(../img/bg_navigation.png) no-repeat top;}
+	
+	ul#nav li a.expanded {background: url(../img/bg_navigation.png) 0 -76px;}
+	
+	ul#nav li a.collapsed:hover {background: url(../img/bg_navigation.png) no-repeat 0 -38px; width: 205px;}
+	ul#nav li a.expanded:hover {background: url(../img/bg_navigation.png) no-repeat 0 -114px; width: 205px;}
+
+	ul.navigation li.selected {background: url(../img/bg_navigation_selected.png) no-repeat -1px 0; border: none;}
+	
+	/* Side Notifications */
+	
+	.notifycount {background: url(../img/bg_notify_count.png) no-repeat top;}
+
+		
+			
+	
