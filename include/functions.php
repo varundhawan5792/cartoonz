@@ -8,6 +8,11 @@ echo $row["url"].', '. basename($row["url"]);
 getDirectory($row["url"], basename($row["url"]),  '10', 'music');
 */
 
+function get_parent_path(){
+	chdir('..');
+	return getcwd();
+}
+
 function getDirectory( $path, $basepath, $level = 0, $dbname){ 
 		
 	$ignore = array( 'cgi-bin', '.', '..', '.svn' ); 
@@ -343,7 +348,7 @@ function get_server_load($windows = 0) {
 	}
 	elseif($windows) {
 	  $Script = "usage.exe";
-  	  $DIR = "X:\\wamp\\www\\cartoonz\\adm\\etc\\";
+  	  $DIR = get_parent_path() . "\\adm\\etc\\";
 	  $runScript = $DIR. $Script;
 	  exec( $runScript,$out,$ret);
 	  return $out[0]."%";
@@ -357,7 +362,7 @@ function get_server_load($windows = 0) {
 function getIp()
 {
 	$Script = "getip.exe";
-	$DIR = "X:\\wamp\\www\\cartoonz\\adm\\etc\\";
+	$DIR = get_parent_path() . "\\adm\\etc\\";
 	$runScript = $DIR. $Script;
 	exec( $runScript,$out,$ret);
 	return $out[0];
