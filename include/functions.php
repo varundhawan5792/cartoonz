@@ -221,8 +221,7 @@ function array_put_to_position(&$array, $object, $position, $name = null)
 function get_data($url)
 {
 	$ch = curl_init();
-	$timeout = 5;
-	curl_setopt($ch, CURLOPT_TIMEOUT, 5000);
+	curl_setopt($ch, CURLOPT_TIMEOUT, 100);
 	curl_setopt($ch, CURLOPT_URL, $url);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 	$data = curl_exec($ch);
@@ -359,6 +358,35 @@ function get_server_load($windows = 0) {
 
 }
 
+function get_quick_server_load($windows = 0) {
+	$os = strtolower(PHP_OS);
+	if(strpos($os, "win") === false) {
+	  if(file_exists("/proc/loadavg")) {
+		 $load = file_get_contents("/proc/loadavg");
+		 $load = explode(' ', $load);
+		 return $load[0];
+	  }
+	  elseif(function_exists("shell_exec")) {
+		 $load = explode(' ', `uptime`);
+		 return $load[count($load)-1];
+	  }
+	  else {
+		 return "";
+	  }
+	}
+	elseif($windows) {
+	  $Script = "quickusage.exe";
+  	  $DIR = get_parent_path() . "\\adm\\etc\\";
+	  $runScript = $DIR. $Script;
+	  exec( $runScript,$out,$ret);
+	  return $out[0]."%";
+	}
+    else {
+	 return "";
+    }
+
+}
+
 function getIp()
 {
 	$Script = "getip.exe";
@@ -372,15 +400,16 @@ function load_server_list(){
 	
 	include('connectDB.php');
 	$query = "CREATE TABLE IF NOT EXISTS `server_list` (
-	  		  `id` int(10) NOT NULL AUTO_INCREMENT,
+			  `id` int(10) NOT NULL AUTO_INCREMENT,
 			  `server_ip` varchar(15) NOT NULL,
+			  `server_load` VARCHAR(10) NOT NULL,
 			  PRIMARY KEY (`id`)
-			  ) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1";
+			 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1";
 	$result = executeQuery($query);
 	$query = "SELECT * FROM server_list";
 	$result = executeQuery($query);
-	$ip = getIp();
 	if(mysql_num_rows($result) == 0){
+		$ip = getIp();
 		$query = "INSERT INTO server_list(server_ip) values('$ip')";
 		$result = executeQuery($query);
 	}
@@ -393,7 +422,7 @@ function load_server_list(){
 		<tr id='server".$row['id']."'>
 			<td title='".$row['server_ip']."' style='cursor:pointer;'>Server #$cntr</td>
 			<td id='display'>
-				<div class='usage red nostripes'>
+				<div class='usage nostripes'>
 					<span style='width: 0%'></span>
 				</div>
 			</td>
