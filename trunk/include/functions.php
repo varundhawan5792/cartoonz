@@ -4,10 +4,78 @@
 $query = "SELECT * FROM base_url WHERE category = 'music'";
 $result = executeQuery($query);
 $row = mysql_fetch_array($result);
-//echo $row["url"].', '. basename($row["url"]);
+echo $row["url"].', '. basename($row["url"]);
+getDirectory($row["url"], basename($row["url"]),  '10', 'music');
 */
 
-//getDirectory($row["url"], basename($row["url"]),  '10', 'music');
+function getDirectory( $path, $basepath, $level = 0, $dbname){ 
+		
+	$ignore = array( 'cgi-bin', '.', '..', '.svn' ); 
+	$dh = @opendir( $path ); 
+	while( false !== ( $file = readdir( $dh ) ) ){ 
+		if( !in_array( $file, $ignore ) && isAllowed($file)){ 
+		
+			$spaces = str_repeat( '&nbsp;&nbsp;', ( $level * 2 ) ); 
+			if( is_dir( "$path/$file" ) ){ 
+			   
+			   $basedir = basename($path);
+			   $url = $path.'/'.$file;
+			   //echo "$basedir, $url, $basepath<br/>";		   
+			   $query = "SELECT * FROM {$dbname}_folders WHERE name like \"$file\"";
+			   //echo "$query<br/>";
+			   $result = executeQuery($query);
+			   if(mysql_num_rows($result) == 0)
+			   {
+				   date_default_timezone_set('Asia/Calcutta');
+				   $date = date(filemtime($url)); //"F d Y H:i:s."
+				   if($basedir == $basepath){
+					   $query = "INSERT INTO {$dbname}_folders(base_id, name, date_added) values((SELECT id FROM base_url WHERE name=\"$basedir\"), \"$file\", '$date')";
+				   }
+				   else{
+						$query = "INSERT INTO {$dbname}_folders(base_id, parent_id, name, date_added) values((SELECT id FROM base_url WHERE name=\"$basedir\"), (SELECT id FROM {$dbname}_folders as {$dbname} WHERE name=\"$basedir\"), \"$file\", '$date')";   
+						//echo "$query<br/>";
+				   }
+				   executeQuery($query);
+			   }
+			   getDirectory( "$path/$file", $basepath, ($level+1), $dbname);
+			   
+			} 
+			else { 
+
+			   $basedir = basename($path);
+			   $dirname = basename(dirname($path));
+			   
+			   $parent1 = $basedir;
+			   $parent2 = $dirname;
+			   if($parent2 == $basepath){
+					$query = "SELECT id FROM base_url WHERE name=\"$parent2\"";
+					$result = executeQuery($query);
+					$row = mysql_fetch_array($result);
+					$base_id = $row["id"];
+			   }
+				else
+					$base_id = "NULL";
+			   
+			   if($parent2 != $basepath)
+				   $query_parent = "SELECT id FROM {$dbname}_folders WHERE name=\"$parent1\" and parent_id=(SELECT id FROM {$dbname}_folders WHERE name=\"$parent2\")";
+			   else   
+				   $query_parent = "SELECT id FROM {$dbname}_folders WHERE name=\"$parent1\" and parent_id is NULL";
+			   $query = "SELECT * FROM {$dbname}_files WHERE parent_id=($query_parent) and name=\"$file\"";
+			   $result = executeQuery($query);
+			   if(mysql_num_rows($result) == 0)
+			   {
+				   //$query_parent = "SELECT id FROM {$dbname}_folders WHERE name=\"$parent1\" and parent_id=(SELECT id FROM {$dbname}_folders WHERE name=\"$parent2\")";
+				   $query = "INSERT INTO {$dbname}_files(parent_id, name) values(($query_parent),\"$file\")";
+				   executeQuery($query);
+				   //echo "$file<br/>";
+			   }
+			} 
+		} 
+	} 
+	closedir( $dh ); 
+	// Close the directory handle 
+	// echo "<br/>Files added from <br/>path = '$path' to <br/>database = $dbname";
+} 
 
 class dbOperations{
 	
@@ -78,13 +146,11 @@ class dbOperations{
 				   else   
 					   $query_parent = "SELECT id FROM {$dbname}_folders WHERE name=\"$parent1\" and parent_id is NULL";
 				   $query = "SELECT * FROM {$dbname}_files WHERE parent_id=($query_parent) and name=\"$file\"";
-				   //writeFile("file.txt", "$file, $query\r\n", "a+");
 				   $result = executeQuery($query);
 				   if(mysql_num_rows($result) == 0)
 				   {
 					   //$query_parent = "SELECT id FROM {$dbname}_folders WHERE name=\"$parent1\" and parent_id=(SELECT id FROM {$dbname}_folders WHERE name=\"$parent2\")";
 					   $query = "INSERT INTO {$dbname}_files(parent_id, name) values(($query_parent),\"$file\")";
-					   writeFile("file.txt", "$file, $query\n\r", "a+");
 					   executeQuery($query);
 					   //echo "$file<br/>";
 				   }
@@ -121,6 +187,30 @@ class dbOperations{
 		  fclose($fp);
 		  return $temp;
 	}
+}
+
+
+function array_put_to_position(&$array, $object, $position, $name = null)
+{
+        $count = 0;
+        $return = array();
+        foreach ($array as $k => $v) 
+        {   
+                // insert new object
+                if ($count == $position)
+                {   
+                        if (!$name) $name = $count;
+                        $return[$name] = $object;
+                        $inserted = true;
+                }   
+                // insert old object
+                $return[$k] = $v; 
+                $count++;
+        }   
+        if (!$name) $name = $count;
+        if (!$inserted) $return[$name];
+        $array = $return;
+        return $array;
 }
 
 function get_data($url)
@@ -234,3 +324,76 @@ function sizeFormat($size)
 		return $size." GB"; 
 	} 
 }  
+
+function get_server_load($windows = 0) {
+	$os = strtolower(PHP_OS);
+	if(strpos($os, "win") === false) {
+	  if(file_exists("/proc/loadavg")) {
+		 $load = file_get_contents("/proc/loadavg");
+		 $load = explode(' ', $load);
+		 return $load[0];
+	  }
+	  elseif(function_exists("shell_exec")) {
+		 $load = explode(' ', `uptime`);
+		 return $load[count($load)-1];
+	  }
+	  else {
+		 return "";
+	  }
+	}
+	elseif($windows) {
+	  $Script = "usage.exe";
+  	  $DIR = "X:\\wamp\\www\\cartoonz\\adm\\etc\\";
+	  $runScript = $DIR. $Script;
+	  exec( $runScript,$out,$ret);
+	  return $out[0]."%";
+	}
+    else {
+	 return "";
+    }
+
+}
+
+function getIp()
+{
+	$Script = "getip.exe";
+	$DIR = "X:\\wamp\\www\\cartoonz\\adm\\etc\\";
+	$runScript = $DIR. $Script;
+	exec( $runScript,$out,$ret);
+	return $out[0];
+}
+
+function load_server_list(){
+	
+	include('connectDB.php');
+	$query = "CREATE TABLE IF NOT EXISTS `server_list` (
+	  		  `id` int(10) NOT NULL AUTO_INCREMENT,
+			  `server_ip` varchar(15) NOT NULL,
+			  PRIMARY KEY (`id`)
+			  ) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1";
+	$result = executeQuery($query);
+	$query = "SELECT * FROM server_list";
+	$result = executeQuery($query);
+	$ip = getIp();
+	if(mysql_num_rows($result) == 0){
+		$query = "INSERT INTO server_list(server_ip) values('$ip')";
+		$result = executeQuery($query);
+	}
+	$query = "SELECT * FROM server_list";
+	$result = executeQuery($query);
+	$cntr=0;
+	while($row = mysql_fetch_array($result)){
+		$cntr++;
+		echo "
+		<tr id='server".$row['id']."'>
+			<td title='".$row['server_ip']."' style='cursor:pointer;'>Server #$cntr</td>
+			<td id='display'>
+				<div class='usage red nostripes'>
+					<span style='width: 0%'></span>
+				</div>
+			</td>
+			<td id='value'>0%</td>
+		</tr>
+		";
+	}
+}

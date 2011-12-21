@@ -348,6 +348,10 @@ body {
 			     -moz-border-radius-bottomleft: 20px;
 			            border-top-left-radius: 20px;
 			         border-bottom-left-radius: 20px;
+								 transition: width 1s;
+							-moz-transition: width 1s;
+						 -webkit-transition: width 1s;
+							  -o-transition: width 1s;
 			background-color: rgb(43,194,83);
 			background-image: -webkit-gradient(
 			  linear,

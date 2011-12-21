@@ -1,5 +1,16 @@
 // JavaScript Document
 
+function doClick(){
+	$("#lane2").find("#other_list").find("a").click(function(){
+		loadMusicFiles($(this).attr("id"));
+	})
+	$("#lane3").find("#other_list").find("a.folder").dblclick(function(){
+		alert("it's a folder!");
+	})
+	$("#lane3").find("#other_list").find("a.file").click(function(){
+		alert("it's a file!");
+	})
+}
 function shortText(string, length){
 	return string.substring(0, length) + "...";
 }
@@ -25,8 +36,8 @@ function loadMusic(){
 	var cntr=0, time=0;
 	$.getJSON("./include/do.php?q=get_music_folder_list", 
 		function(data){
+			
 			data = data.query;
-			data1 = data;
 			time = data.length*2;
 			$(data).each(function(){
 				if(cntr == 0){
@@ -35,6 +46,7 @@ function loadMusic(){
 						$("#form").addClass("form_vis");
 						$("#form").animate({"marginTop":"0px"}, 500, "linear");
 						$("#form").fadeIn(0);
+						doClick();
 						$("input").focus(function(){
 							if($(this).val() == $(this).attr("alt"))
 								$(this).val("");
@@ -54,9 +66,45 @@ function loadMusic(){
 				setTimeout(function(){
 					$(target).append("<li><a class='folder' id='" + id + "'>" + name + "&nbsp;&nbsp;&nbsp;</a></li>");
 					
-				},50+cntr);
+				},0+cntr);
 				cntr+=2;
 				
+			});
+	});	
+	
+}
+
+function loadMusicFiles(parent){
+	
+	alert(parent);
+	target = $("#lane3").find("#other_list");
+	$(target).html('');
+	var cntr=0, time=0;
+	$.getJSON("./include/do.php?q=get_music_files_list&parent="+parent, 
+		function(data){
+			
+			time = data.length*2;
+			data = data.query;
+			data1 = data;
+			$(data).each(function(){
+				if(cntr == 0){
+					setTimeout(function(){
+						
+						doClick();
+						
+					}, time);
+				}
+				var id = $(this)[0].id;
+				var name = $(this)[0].name;
+				var type = $(this)[0].type;
+			
+				if(type=="folder")
+				  $(target).append("<li><a class='folder' id='" + id + "'>" + name + "&nbsp;&nbsp;&nbsp;</a></li>");
+				else
+				  $(target).append("<li><a class='file music' id='" + id + "'>" + name + "&nbsp;&nbsp;&nbsp;</a></li>");
+				
+				cntr+=2;
+				data="";
 			});
 	});	
 	
