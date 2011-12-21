@@ -51,9 +51,7 @@ include_once('../include/functions.php');
     <div id="rightside">
     
     	<!-- Warnings! -->
-        <div class="status warning">
-        	<p class="closestatus"><a href="" title="Close">x</a></p>
-        	<p><img src="img/icons/icon_warning.png" alt="Warning" /><span>WARNING!</span> High traffic load on Server #1 detected.</p>
+        <div id="warning_container">
         </div>
         <!-- Warnings End -->
         

@@ -60,6 +60,7 @@ else if($q == "get_server_load"){
 		$row = mysql_fetch_array($result);
 		$ip = $row["server_ip"];
 		$data = get_data("http://$ip/cartoonz/include/do.php?q=get_server_load");
+		$result = executeQuery("UPDATE server_list SET server_load='$data' WHERE id=$id");
 		echo $data;
 	}
 	
