@@ -431,3 +431,48 @@ function load_server_list(){
 		";
 	}
 }
+
+function load_category_list(){
+	
+	include('connectDB.php');
+	$query = "CREATE TABLE IF NOT EXISTS `base_url` (
+  				`id` int(20) NOT NULL AUTO_INCREMENT,
+  				`category` varchar(100) NOT NULL,
+				`name` varchar(100) NOT NULL,
+			    `url` varchar(200) NOT NULL,
+  				PRIMARY KEY (`id`)
+			  ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1";
+    $result = executeQuery($query);
+	$query = "SELECT * FROM base_url";
+	$result = executeQuery($query);
+	$cntr=0;
+	while($row = mysql_fetch_array($result)){
+		$cntr++;
+		echo "
+		<tr id='category_list_".$row['id']."'>
+			<td title='".$row['category']."' style='cursor:pointer;'>Category #$cntr</td>
+			<td id='category'>
+				".$row['category']."
+			</td>
+			<td id='url'>
+				".$row['url']."
+			</td>
+			<td>
+				<a href='' onclick='editCategory(".$row['id'].");return false;'><img src='img/icons/icon_edit.png' border=0 style='display:inline;'></a>
+				<a href='' onclick='removeCategory(".$row['id'].");return false;'><img src='img/icons/icon_unapprove.png' border=0></a>
+			</td>
+		</tr>
+		";
+	}
+	if($cntr == 0){
+		echo '<tr id="category_list1">
+			    <td title="Nothing here! :|" style="cursor:pointer;">
+				   Nothing here! :|
+				</td>
+			    <td id="display">
+			    </td>
+			    <td>
+				</td>
+		      </tr>';
+	}
+}

@@ -7,6 +7,7 @@ $q = $_GET["q"];
 $baseURL = "http://" . $_SERVER['HTTP_HOST'] . "/";
 
 if($q == "get_music_folder_list"){
+	
 	header('Content-type: application/json');
 	$arr = array();
 	$result = executeQuery("SELECT * FROM music_folders WHERE base_id in (SELECT id FROM base_url WHERE category='music')");
@@ -18,6 +19,7 @@ if($q == "get_music_folder_list"){
 	
 }
 else if($q == "get_music_files_list"){
+	
 	header('Content-type: application/json');
 	if(empty($_GET["parent"])){
 		echo '{"query":[{}]}';
@@ -39,7 +41,8 @@ else if($q == "get_music_files_list"){
 	}
 	echo json_encode($arr);
 }
-if($q == "get_server_list"){
+else if($q == "get_server_list"){
+	
 	header('Content-type: application/json');
 	$arr = array();
 	$result = executeQuery("SELECT * FROM server_list");
@@ -62,6 +65,42 @@ else if($q == "get_server_load"){
 		$data = get_data("http://$ip/cartoonz/include/do.php?q=get_server_load");
 		$result = executeQuery("UPDATE server_list SET server_load='$data' WHERE id=$id");
 		echo $data;
+	}
+	
+}
+else if($q == "add_category"){
+
+	if(empty($_GET["category"]) || empty($_GET["url"])){	
+		echo "false";
+	}
+	else{
+		
+		$category = $_GET["category"];
+		$url = urldecode($_GET["url"]);
+		$name = basename($url);
+		if(!empty($_GET["id"])){	
+			$id = $_GET["id"];
+			$q = "UPDATE base_url SET category='$category', url='$url', name='$name' WHERE id=$id";
+		}
+		else{
+			$q = "INSERT INTO base_url(name, category, url) values('$name', '$category', '$url')";
+		}
+		
+		$result = executeQuery($q);
+		echo "true";
+	}
+	
+}
+else if($q == "remove_category"){
+
+	if(empty($_GET["id"])){	
+		echo "false";
+	}
+	else{
+		$id = $_GET["id"];
+		$q = "DELETE FROM base_url WHERE id=$id";
+		$result = executeQuery($q);
+		echo "true";
 	}
 	
 }
