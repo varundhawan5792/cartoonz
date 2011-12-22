@@ -55,13 +55,17 @@ include_once('../include/functions.php');
         </div>
         <!-- Warnings End -->
         
+        <!-- Ajax Container Start -->
+        <div id="ajaxcontainer">
+        
         <!-- Content Box Start -->
         <div class="contentcontainer">
             <div class="headings alt">
                 <h2>Usages & Stats</h2>
             </div>
             <div class="contentbox">
-            	<table id="cpu_usage">
+            	
+                <table id="cpu_usage">
                 	<tr>
                     	<th width="100" class="head"><strong>CPU Usage:</strong></th>
                         <th width="200" class="head"></th>
@@ -73,6 +77,7 @@ include_once('../include/functions.php');
 					 
 					 ?>
                 </table>
+                
             </div>
         </div>
         <!-- Content Box End -->
@@ -151,10 +156,11 @@ include_once('../include/functions.php');
                 </div>
                 <div class="noticeboxalt">
                     <div class="innernotice">
-                        <h4>Notice</h4>
+                        <h4>Notice: </h4>
                         <p></p>
                         <p>Dhawan bhai, isko hata kar kuch achha sa daalna iski jagah.. Tab tak ke liye space holder =))</p>
                         <p><a href="#" title="">Read more</a></p>
+                        
                     </div>
                 </div>
 
@@ -162,6 +168,10 @@ include_once('../include/functions.php');
             </div>
         </div>
         <!-- Content Box End -->
+        
+        </div>
+        <!-- Ajax Container End -->
+        
         <div id="footer" >
         	&copy; No-Copyright 2012 <!-- You still can't copy us. Yes, we are that good! --> 
         </div> 
@@ -179,7 +189,7 @@ include_once('../include/functions.php');
         <ul id="nav">
         	<li>
                 <ul class="navigation">
-                    <li class="heading selected">Dashboard</li>
+                    <li class="heading selected" id="dashboard">Dashboard</li>
                 </ul>
             </li>
             <li>
@@ -189,15 +199,15 @@ include_once('../include/functions.php');
                     <li><a href="#" title="">User log</a></li>
                 </ul>
             </li>
-            <li><a class="collapsed heading">Downloads</a>
+            <li><a class="expanded heading">Downloads</a>
                  <ul class="navigation">
-                    <li><a href="#" title="">Categories</a></li>
+                    <li><a href="#" title="" id="categories">Categories</a></li>
                     <li><a href="#" title="">Settings</a></li>
                     <li><a href="#" title="">File Types</a></li>
                     <li><a href="#" title="">Files</a></li>
                 </ul>
             </li>             
-            <li><a class="expanded heading">Miscellaneous</a>
+            <li><a class="collapsed heading">Miscellaneous</a>
                  <ul class="navigation">
                     <li><a href="#" title="">Upcoming</a></li>
                     <li><a href="#" title="">Requests</a></li>

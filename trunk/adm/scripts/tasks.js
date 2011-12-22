@@ -1,12 +1,132 @@
 // Side Navigation Menu Slide
+var refresh_load = true;
+var categoryId;
 
 $(document).ready(function() {
-	displayLoad();
+	startUsageLoader();
+	$("#dashboard").click(function(){ loadDashboard(); });
+	$("#categories").click(function(){ loadCategories(); });
 });
 
-var data1;
-function displayLoad(){
+function loadDashboard(){
+	
+	refresh_load = true;
+	$("#ajaxcontainer div").animate({"height":"0", "opacity":"0"});
+	$("#ajaxcontainer").load("../include/ajax_adm/content_dashboard.php", function(){ $("#ajaxcontainer div").fadeIn(150) });
+	startUsageLoader();
+}
+function loadCategories(){
+	
+	refresh_load = false;
+	$("#ajaxcontainer div").animate({"height":"0", "opacity":"0"});
+	$("#ajaxcontainer").load("../include/ajax_adm/content_categories.php", function(){ 
+		$("#ajaxcontainer div").fadeIn(150);
+		$("button#add_category").click(function(){
+			if($(this).text() == "Add"){
+				addCategory();
+			}
+			else{
+				$("form#add_category").fadeIn(50);
+				$("button#cancel_add_category").fadeIn(0);
+				$(this).text("Add");
+			}
+		})
+		$("button#cancel_add_category").click(function(){
+			$("form#add_category").fadeOut(0);
+			$("button#add_category").text("Add Category");
+			$("button#add_category").fadeIn(0);
+			$("button#edit_category").fadeOut(0);
+			$(this).fadeOut(0);
+		})
+	});
+	
+}
+function editCategory(id){
+	
+	$("form#add_category").find("#category").val($("#category_list_"+id).find("#category").text().trim());
+	$("form#add_category").find("#url").val($("#category_list_"+id).find("#url").text().trim());
+	$("button#add_category").fadeOut(0);
+	$("form#add_category").fadeIn(50);
+	$("button#edit_category").fadeIn(0);
+	$("button#cancel_add_category").fadeIn(0);
+	categoryId = id;
+	$("button#edit_category").click(function(){
+		addEditCategory(categoryId);
+	})
+	return false;
+}
+function addEditCategory(id){
+	var cat = $("form#add_category").find("#category").val().trim();
+	var url = $("form#add_category").find("#url").val().trim();
 
+	if(cat.length == 0 || url.length == 0){
+		alert("Man! Don't leave them empty.");
+		return false;
+	}
+	url = encodeURI(url);
+	$.getJSON("../include/do.php?q=add_category&category="+cat+"&url="+url+"&id="+id, 
+		function(data){
+			//alert(data);
+			if(data == true){
+				loadCategories();
+			}
+			else{
+				alert(data+": Error! Category not edited.");
+				
+			}
+		}
+	);
+	return false;
+}
+function addCategory(){
+	
+	var cat = $("form#add_category").find("#category").val().trim();
+	var url = $("form#add_category").find("#url").val().trim();
+
+	if(cat.length == 0 || url.length == 0){
+		alert("Man! Don't leave them empty.");
+		return false;
+	}
+	url = encodeURI(url);
+	$.getJSON("../include/do.php?q=add_category&category="+cat+"&url="+url, 
+		function(data){
+			if(data == true){
+				loadCategories();
+			}
+			else{
+				alert(data+": Error! Category not added.");
+				
+			}
+		}
+	);
+	return false;
+}
+function removeCategory(id){
+	
+	if(!confirm("Are you sure you want to delete this?"))
+		return false;
+	$.getJSON("../include/do.php?q=remove_category&id="+id, 
+		function(data){
+			if(data == true){
+				loadCategories();
+			}
+			else{
+				alert(data+": Error! Category not removed.");
+				
+			}
+		}
+	);
+	return false;
+}
+function startUsageLoader(){
+	displayLoad();
+	setTimeout(function(){startUsageLoader();}, 7000);
+}
+function displayLoad(){
+	
+	if(refresh_load == false)
+	    return;
+	//alert('geting usage..')	;
 	$.getJSON("../include/do.php?q=get_server_list", 
 		function(data){
 			data1 = data;
@@ -16,7 +136,7 @@ function displayLoad(){
 				var ip = $(this)[0].server_ip;
 				fetchLoad(id, ip);
 			})
-			setTimeout(function(){displayLoad();}, 8000);
+			
 		}
 	);
 	
@@ -72,5 +192,9 @@ function showWarning(msg){
 
 function removeWarning(object){
 	$(object).parent().parent().remove();
+	return false;
+}
+
+function voided(){	
 	return false;
 }
