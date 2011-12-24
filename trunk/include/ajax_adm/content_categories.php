@@ -9,6 +9,7 @@
     </div>
     <div class="contentbox">
         
+      <div style="float:left;">
         <table id="cpu_usage">
             <tr>
                 <th width="100" class="head"><strong>Categoty List:</strong></th>
@@ -40,6 +41,40 @@
 				</td>
 		     </tr>
          </table>
+       </div>  
+       <div style="float:left;margin-left:20px;">
+           <table id="cpu_usage">
+                <tr>
+                    <th width="100" class="head"><strong>Subcategories:</strong></th>
+                    <th width="50" class="head"></th>
+                    <th width="150" class="head"></th>
+                    <th width="40" class="head" ><span id="loader" style="float:right;display:none;"><img src="img/ajax-loader.gif" height="10"></span></th>
+                 </tr>
+                 <?php
+                    
+                    load_category_list();
+                 
+                 ?>
+                 
+            </table>
+            <table>
+        	<tr>
+			    <td>
+				   <div>
+                   	  <form id="add_subcategory" onsubmit="return false;">	
+                   		<label>Name: </label><input type="text" id="category">
+                        <label>URL: </label><input type="text" id="url">
+                      </form>  
+                   </div>
+                   <button id="add_subcategory"> Add Subcategory </button><button id="edit_subcategory" style="display:none;"> Save </button><button id="cancel_add_subcategory" style="display:none;"> Cancel </button>
+				</td>
+			    <td>
+			    </td>
+			    <td>
+				</td>
+		     </tr>
+         </table>
+        </div>    
     </div>
 </div>
 <!-- Content Box End -->

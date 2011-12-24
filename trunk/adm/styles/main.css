@@ -330,9 +330,9 @@ body {
 			-webkit-border-radius: 25px;
 			border-radius: 25px;
 			padding: 2px 4px;
-			-webkit-box-shadow: inset 0 -1px 1px rgba(255,255,255,0.3);
-			-moz-box-shadow   : inset 0 -1px 1px rgba(255,255,255,0.3);
-			box-shadow        : inset 0 -1px 1px rgba(255,255,255,0.3);
+			-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,0.3);
+			-moz-box-shadow   : inset 0 1px 1px rgba(0,0,0,0.3);
+			box-shadow        : inset 0 1px 1px rgba(0,0,0,0.3);
 		}
 		.usage > span {
 			display: block;
@@ -470,8 +470,9 @@ body {
 			text-shadow: 1px 1px 1px #fff;
 		}
 		button {
-			width: 100px;
+			width: auto;
 			height: 26px;
+			padding:0 7px;
 			background: #EAEAEA url(../img/bg_heading.png) repeat-x top;
 			border: 1px solid #CCC;
 			color:#555;
@@ -495,11 +496,11 @@ body {
 			cursor: pointer;
 			
 		}
-		form#add_category {
+		form#add_category, form#add_subcategory {
 			display:none;
 			margin-bottom:5px;
 		}
-		form#add_category input[type=text]{
+		form#add_category input[type=text], form#add_subcategory input[type=text]{
 			width: 135px;
 			height: 20px;
 			margin-right:5px;
@@ -513,3 +514,4 @@ body {
 			-moz-box-shadow: inset 0px 1px 1px rgba(0,0,0,0.1);
 			-webkit-box-shadow: inset 0px 1px 1px rgba(0,0,0,0.1);
 		}
+		

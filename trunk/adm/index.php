@@ -187,7 +187,7 @@ include_once('../include/functions.php');
         </div>
         
         <ul id="nav">
-        	<li>
+        	<li >
                 <ul class="navigation">
                     <li class="heading selected" id="dashboard">Dashboard</li>
                 </ul>
@@ -195,22 +195,22 @@ include_once('../include/functions.php');
             <li>
                 <a class="collapsed heading">Users</a>
                 <ul class="navigation">
-                    <li><a href="#" title="">Manage users</a></li>
-                    <li><a href="#" title="">User log</a></li>
+                    <li id="manageusers"><a href="#" title="">Manage users</a></li>
+                    <li id="userlog"><a href="#" title="">User log</a></li>
                 </ul>
             </li>
             <li><a class="expanded heading">Downloads</a>
                  <ul class="navigation">
-                    <li><a href="#" title="" id="categories">Categories</a></li>
-                    <li><a href="#" title="">Settings</a></li>
-                    <li><a href="#" title="">File Types</a></li>
-                    <li><a href="#" title="">Files</a></li>
+                    <li id="categories"><a href="javascript:;" title="">Categories</a></li>
+                    <li id="settings"><a href="javascript:;" title="">Settings</a></li>
+                    <li id="filetypes"><a href="javascript:;" title="">File Types</a></li>
+                    <li id="files"><a href="javascript:;" title="">Files</a></li>
                 </ul>
             </li>             
             <li><a class="collapsed heading">Miscellaneous</a>
                  <ul class="navigation">
-                    <li><a href="#" title="">Upcoming</a></li>
-                    <li><a href="#" title="">Requests</a></li>
+                    <li id="upcoming"><a href="#" title="">Upcoming</a></li>
+                    <li id="requests"><a href="#" title="">Requests</a></li>
                 </ul>
             </li>            
         </ul>

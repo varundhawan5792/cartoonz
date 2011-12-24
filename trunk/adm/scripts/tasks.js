@@ -1,24 +1,93 @@
 // Side Navigation Menu Slide
 var refresh_load = true;
 var categoryId;
+var loadDetect = true;
 
+function removeSpaces(string) {
+	return string.split(' ').join('');
+}
+function getUrlHash() {
+	
+	//alert(window.location.hash);
+	if(window.location.hash.indexOf("#!/") != 0){
+		loadDetect = false;
+		return;
+	}
+	if(window.location.hash == "#!/"){
+		window.location.hash = "#!/dashboard";
+	}
+	
+	var hash = window.location.hash.substr(3);
+	switch(hash){
+		case 'categories':
+		    loadCategories(true);
+			break;
+		case 'dashboard':
+		    loadDashboard(false);
+			break;
+		case 'settings':
+		    
+			break;	
+	}
+	
+	loadDetect = false;
+}
 $(document).ready(function() {
+	
+	getUrlHash();
 	startUsageLoader();
-	$("#dashboard").click(function(){ loadDashboard(); });
-	$("#categories").click(function(){ loadCategories(); });
+
+	$("#dashboard").click(function(){ loadDashboard(false); });
+	//$("#categories").click(function(){ loadCategories(false); });
+	
+	$("ul.navigation li").click(function(){	
+		var value, cat;
+		if($(this).find("a").length == 0)
+			return;
+		else{
+			value = $(this).find("a").text();
+			cat = removeSpaces(value.toLowerCase());
+		}
+		window.location.hash = "#!/"+cat;
+		$("ul.navigation li").each(function(){
+			$(this).removeClass("selected");
+			if($(this).find("a").length == 0){
+				if($(this).html().trim() == "Dashboard")
+				  $(this).html('<a href="javascript:;" title="" class="heading">' + $(this).html() + '</a>');
+				else
+				  $(this).html('<a href="javascript:;" title="">' + $(this).html() + '</a>');
+			}
+			
+		})
+		$("li#"+cat).html($("li#"+cat).find("a").text().trim());
+		$("li#"+cat).addClass("selected");
+		if($(this).html().trim() == "Dashboard")
+		   $(".current").html("Dashboard");
+		else
+		   $(".current").html($(this).parent().prev().text().trim());
+	})
+	
 });
 
-function loadDashboard(){
+$(window).bind( 'hashchange', function(){
+	getUrlHash();
+});
+
+function loadDashboard(bypass){
 	
 	refresh_load = true;
+	if($("li#dashboard").hasClass("selected")  && !bypass)
+		return;
 	$("#ajaxcontainer div").animate({"height":"0", "opacity":"0"});
 	$("#ajaxcontainer").load("../include/ajax_adm/content_dashboard.php", function(){ $("#ajaxcontainer div").fadeIn(150) });
 	startUsageLoader();
 }
-function loadCategories(){
+function loadCategories(bypass){
 	
-	refresh_load = false;
-	$("#ajaxcontainer div").animate({"height":"0", "opacity":"0"});
+	refresh_load = false;	
+	if($("li#categories").hasClass("selected") && !bypass)
+		return;	
+	$("#ajaxcontainer div").animate({"height":"0", "opacity":"0"}, {"duration":"200"});
 	$("#ajaxcontainer").load("../include/ajax_adm/content_categories.php", function(){ 
 		$("#ajaxcontainer div").fadeIn(150);
 		$("button#add_category").click(function(){
@@ -32,6 +101,8 @@ function loadCategories(){
 			}
 		})
 		$("button#cancel_add_category").click(function(){
+			$("form#add_category").find("#category").val('');
+			$("form#add_category").find("#url").val('');
 			$("form#add_category").fadeOut(0);
 			$("button#add_category").text("Add Category");
 			$("button#add_category").fadeIn(0);
@@ -66,9 +137,11 @@ function addEditCategory(id){
 	url = encodeURI(url);
 	$.getJSON("../include/do.php?q=add_category&category="+cat+"&url="+url+"&id="+id, 
 		function(data){
-			//alert(data);
 			if(data == true){
-				loadCategories();
+				loadCategories(true);
+			}
+			else if(data == 'duplicate'){
+				alert("A similar entry already exists. Duplicates not allowed!");
 			}
 			else{
 				alert(data+": Error! Category not edited.");
@@ -79,7 +152,7 @@ function addEditCategory(id){
 	return false;
 }
 function addCategory(){
-	
+
 	var cat = $("form#add_category").find("#category").val().trim();
 	var url = $("form#add_category").find("#url").val().trim();
 
@@ -90,8 +163,11 @@ function addCategory(){
 	url = encodeURI(url);
 	$.getJSON("../include/do.php?q=add_category&category="+cat+"&url="+url, 
 		function(data){
-			if(data == true){
-				loadCategories();
+			if(data == "duplicate"){
+				alert("A similar entry already exists. Duplicates not allowed!");
+			}
+			else if(data == true){
+				loadCategories(true);
 			}
 			else{
 				alert(data+": Error! Category not added.");
@@ -108,7 +184,7 @@ function removeCategory(id){
 	$.getJSON("../include/do.php?q=remove_category&id="+id, 
 		function(data){
 			if(data == true){
-				loadCategories();
+				loadCategories(true);
 			}
 			else{
 				alert(data+": Error! Category not removed.");
