@@ -77,19 +77,26 @@ else if($q == "add_category"){
 		
 		$category = $_GET["category"];
 		$url = urldecode($_GET["url"]);
-		$name = basename($url);
+		$name = basename($url);		
 		if(!empty($_GET["id"])){	
 			$id = $_GET["id"];
 			$q = "UPDATE base_url SET category='$category', url='$url', name='$name' WHERE id=$id";
+			$result = executeQuery($q);
+			echo "true";
 		}
 		else{
-			$q = "INSERT INTO base_url(name, category, url) values('$name', '$category', '$url')";
-		}
-		
-		$result = executeQuery($q);
-		echo "true";
+			$q = "SELECT * FROM base_url WHERE category='$category' OR url ='$url'";
+			$result = executeQuery($q);
+			if(mysql_num_rows($result) > 0){
+				echo "duplicate";
+			}
+			else{
+				$q = "INSERT INTO base_url(name, category, url) values('$name', '$category', '$url')";
+				$result = executeQuery($q);
+				echo "true";		
+			}
+		}	
 	}
-	
 }
 else if($q == "remove_category"){
 

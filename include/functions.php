@@ -437,6 +437,7 @@ function load_category_list(){
 	include('connectDB.php');
 	$query = "CREATE TABLE IF NOT EXISTS `base_url` (
   				`id` int(20) NOT NULL AUTO_INCREMENT,
+				`parent_id` int(20) NOT NULL DEFAULT '0',
   				`category` varchar(100) NOT NULL,
 				`name` varchar(100) NOT NULL,
 			    `url` varchar(200) NOT NULL,
