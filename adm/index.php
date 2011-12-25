@@ -40,7 +40,7 @@ include_once('../include/functions.php');
     	<ul>	
         	<li><img src="img/icons/icon_breadcrumb.png" alt="Location" /></li>
         	<li><strong>You are here :</strong></li>
-            <li><a href="#" title="">ACP Index</a></li>
+            <li><a href="#!" title="">ACP Index</a></li>
             <li>»</li>
             <li class="current">Dashboard</li>
         </ul>
@@ -195,8 +195,8 @@ include_once('../include/functions.php');
             <li>
                 <a class="collapsed heading">Users</a>
                 <ul class="navigation">
-                    <li id="manageusers"><a href="#" title="">Manage users</a></li>
-                    <li id="userlog"><a href="#" title="">User log</a></li>
+                    <li id="manageusers"><a href="javascript:;" title="">Manage users</a></li>
+                    <li id="userlog"><a href="javascript:;" title="">User log</a></li>
                 </ul>
             </li>
             <li><a class="expanded heading">Downloads</a>
@@ -209,8 +209,8 @@ include_once('../include/functions.php');
             </li>             
             <li><a class="collapsed heading">Miscellaneous</a>
                  <ul class="navigation">
-                    <li id="upcoming"><a href="#" title="">Upcoming</a></li>
-                    <li id="requests"><a href="#" title="">Requests</a></li>
+                    <li id="upcoming"><a href="javascript:;" title="">Upcoming</a></li>
+                    <li id="requests"><a href="javascript:;" title="">Requests</a></li>
                 </ul>
             </li>            
         </ul>
@@ -241,6 +241,9 @@ include_once('../include/functions.php');
     </div>
     <!-- Notifications Box/Pop-Up End --> 
     
+    <!-- Loader Start-->
+    <div style="position:fixed;" class="ajax_loader"><p>Loading...</p></div>
+    <!-- Loader End -->
     <script type='text/javascript' src='scripts/jquery-ui.min.js'></script>
     <script type="text/javascript" src='scripts/functions.js'></script>
     <script type="text/javascript" src='scripts/tasks.js'></script>

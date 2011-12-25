@@ -432,7 +432,7 @@ function load_server_list(){
 	}
 }
 
-function load_category_list(){
+function load_category_list($sub = 0){
 	
 	include('connectDB.php');
 	$query = "CREATE TABLE IF NOT EXISTS `base_url` (
@@ -444,7 +444,10 @@ function load_category_list(){
   				PRIMARY KEY (`id`)
 			  ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1";
     $result = executeQuery($query);
-	$query = "SELECT * FROM base_url";
+	if($sub == 0)
+	   $query = "SELECT * FROM base_url WHERE parent_id = '0'";
+	else if($sub == 1)
+ 	   $query = "SELECT * FROM base_url WHERE parent_id != '0'";
 	$result = executeQuery($query);
 	$cntr=0;
 	while($row = mysql_fetch_array($result)){
@@ -452,6 +455,7 @@ function load_category_list(){
 		echo "
 		<tr id='category_list_".$row['id']."'>
 			<td title='".$row['category']."' style='cursor:pointer;'>Category #$cntr</td>
+			<td id='parent'><input type='hidden' value='".$row['parent_id']."'></td>
 			<td id='category'>
 				".$row['category']."
 			</td>
@@ -464,6 +468,29 @@ function load_category_list(){
 			</td>
 		</tr>
 		";
+		$query = "SELECT * FROM base_url WHERE parent_id=".$row["id"];
+		$result1 = executeQuery($query);
+		$cntr1 = 0;
+		while($row1 = mysql_fetch_array($result1)){
+			$cntr1 ++;
+			echo "
+			<tr id='category_list_".$row1['id']."' style='color:#BBB;'>
+				<td title='".$row1['category']."' style='cursor:pointer;'>Category #$cntr.$cntr1</td>
+				<td id='parent'><input type='hidden' value='".$row1['parent_id']."'></td>
+				<td id='category'>
+					".$row1['category']."
+				</td>
+				<td id='url'>
+					".$row1['url']."
+				</td>
+				<td>
+					<a href='' onclick='editCategory(".$row1['id'].");return false;'><img src='img/icons/icon_edit.png' border=0 style='display:inline;'></a>
+					<a href='' onclick='removeCategory(".$row1['id'].");return false;'><img src='img/icons/icon_unapprove.png' border=0></a>
+				</td>
+			</tr>
+			";
+		}
+		
 	}
 	if($cntr == 0){
 		echo '<tr id="category_list1">
@@ -475,5 +502,17 @@ function load_category_list(){
 			    <td>
 				</td>
 		      </tr>';
+	}
+}
+
+function get_category_as_option(){
+	
+	include('connectDB.php');
+	$query = "SELECT * FROM base_url WHERE parent_id=0";
+	$result = executeQuery($query);
+	echo "<option id='0'>No Parent</option>";
+	$cntr=0;
+	while($row = mysql_fetch_array($result)){	
+		echo "<option id='".$row["id"]."' value='".$row["id"]."'>".$row["category"]."</option>";
 	}
 }

@@ -9,10 +9,11 @@
     </div>
     <div class="contentbox">
         
-      <div style="float:left;">
+      <div style="float:left;margin-bottom:30px;margin-right:40px;">
         <table id="cpu_usage">
             <tr>
                 <th width="100" class="head"><strong>Categoty List:</strong></th>
+                <th width="1" class="head">&nbsp;</th>
                 <th width="50" class="head"></th>
                 <th width="150" class="head"></th>
                 <th width="40" class="head" ><span id="loader" style="float:right;display:none;"><img src="img/ajax-loader.gif" height="10"></span></th>
@@ -24,6 +25,7 @@
              ?>
              
         </table>
+        <!--
         <table>
         	<tr>
 			    <td>
@@ -41,40 +43,36 @@
 				</td>
 		     </tr>
          </table>
+         -->
        </div>  
-       <div style="float:left;margin-left:20px;">
-           <table id="cpu_usage">
-                <tr>
-                    <th width="100" class="head"><strong>Subcategories:</strong></th>
-                    <th width="50" class="head"></th>
-                    <th width="150" class="head"></th>
-                    <th width="40" class="head" ><span id="loader" style="float:right;display:none;"><img src="img/ajax-loader.gif" height="10"></span></th>
-                 </tr>
-                 <?php
-                    
-                    load_category_list();
-                 
-                 ?>
-                 
-            </table>
-            <table>
-        	<tr>
-			    <td>
-				   <div>
-                   	  <form id="add_subcategory" onsubmit="return false;">	
-                   		<label>Name: </label><input type="text" id="category">
-                        <label>URL: </label><input type="text" id="url">
-                      </form>  
-                   </div>
-                   <button id="add_subcategory"> Add Subcategory </button><button id="edit_subcategory" style="display:none;"> Save </button><button id="cancel_add_subcategory" style="display:none;"> Cancel </button>
-				</td>
-			    <td>
-			    </td>
-			    <td>
-				</td>
-		     </tr>
-         </table>
-        </div>    
+       <div style="float:left;margin-right:40px;width:45%;">
+       		<form id="add_category">    
+            	<table>
+                  <tr>
+                  	  <th width="100" class="head">Add Category</th>
+                      <th width="300" class="head">&nbsp;</th>
+                  </tr>
+                  <tr>
+                   <td>Category: </td><td><input type="text" id="category"></td>
+                  </tr>
+                  <tr> 
+                   <td>URL: </td><td><input type="text" id="url"></td>
+                  </tr>
+                  <tr> 
+                   <td>Parent: </td>
+                   <td>
+                    <select id="parent">
+                        <?php
+                        get_category_as_option();
+                        ?>
+                    </select>
+                   </td>
+                  </tr>
+                </table>
+                <button id="add_category"> Add </button><button id="edit_category" style="display:none;"> Save </button><button id="cancel_add_category"> Clear </button>
+            </form>
+           
+       </div>    
     </div>
 </div>
 <!-- Content Box End -->
