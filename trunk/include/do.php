@@ -86,7 +86,7 @@ else if($q == "add_category"){
 			echo "true";
 		}
 		else{
-			$q = "SELECT * FROM base_url WHERE category='$category' OR url ='$url'";
+			$q = "SELECT * FROM base_url WHERE category='$category' AND url ='$url'";
 			$result = executeQuery($q);
 			if(mysql_num_rows($result) > 0){
 				echo "duplicate";
@@ -106,7 +106,7 @@ else if($q == "remove_category"){
 	}
 	else{
 		$id = $_GET["id"];
-		$q = "DELETE FROM base_url WHERE id=$id";
+		$q = "DELETE FROM base_url WHERE id=$id or parent_id=$id";
 		$result = executeQuery($q);
 		echo "true";
 	}

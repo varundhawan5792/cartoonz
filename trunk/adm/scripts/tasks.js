@@ -131,7 +131,6 @@ function loadCategories(bypass){
 		ajaxLoaderRemove();
 		$("button#add_category").click(function(){
 			addCategory();
-			
 		})
 		$("button#cancel_add_category").click(function(){
 			$("form#add_category").find("#category").val('');
@@ -191,7 +190,6 @@ function addCategory(){
 	var cat = $("form#add_category").find("#category").val().trim();
 	var url = $("form#add_category").find("#url").val().trim();
 	var parent = $('select#parent').find('option:selected').val();
-	
 	if(cat.length == 0 || url.length == 0){
 		alert("Man! Don't leave them empty.");
 		return false;
@@ -199,6 +197,7 @@ function addCategory(){
 	url = encodeURI(url);
 	$.getJSON("../include/do.php?q=add_category&category="+cat+"&url="+url+"&parent="+parent, 
 		function(data){
+			
 			if(data == "duplicate"){
 				alert("A similar entry already exists. Duplicates not allowed!");
 			}
