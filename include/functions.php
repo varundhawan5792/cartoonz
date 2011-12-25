@@ -441,6 +441,7 @@ function load_category_list($sub = 0, $options = 0){
   				`category` varchar(100) NOT NULL,
 				`name` varchar(100) NOT NULL,
 			    `url` varchar(200) NOT NULL,
+				`alias` varchar(30) DEFAULT NULL,
   				PRIMARY KEY (`id`)
 			  ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1";
     $result = executeQuery($query);
