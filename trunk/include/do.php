@@ -76,11 +76,12 @@ else if($q == "add_category"){
 	else{
 		
 		$category = $_GET["category"];
+		$parent = $_GET["parent"];
 		$url = urldecode($_GET["url"]);
 		$name = basename($url);		
 		if(!empty($_GET["id"])){	
 			$id = $_GET["id"];
-			$q = "UPDATE base_url SET category='$category', url='$url', name='$name' WHERE id=$id";
+			$q = "UPDATE base_url SET category='$category', url='$url', name='$name', parent_id='$parent' WHERE id=$id";
 			$result = executeQuery($q);
 			echo "true";
 		}
@@ -91,7 +92,7 @@ else if($q == "add_category"){
 				echo "duplicate";
 			}
 			else{
-				$q = "INSERT INTO base_url(name, category, url) values('$name', '$category', '$url')";
+				$q = "INSERT INTO base_url(parent_id, name, category, url) values('$parent', '$name', '$category', '$url')";
 				$result = executeQuery($q);
 				echo "true";		
 			}

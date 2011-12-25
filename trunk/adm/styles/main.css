@@ -470,7 +470,7 @@ body {
 			text-shadow: 1px 1px 1px #fff;
 		}
 		button {
-			width: auto;
+			min-width:75px !important;
 			height: 26px;
 			padding:0 7px;
 			background: #EAEAEA url(../img/bg_heading.png) repeat-x top;
@@ -485,6 +485,7 @@ body {
 			cursor: pointer;
 			margin-top:8px;
 			margin-right:8px;
+			margin-left:8px;
 			
 		}
 		button:hover {
@@ -497,11 +498,11 @@ body {
 			
 		}
 		form#add_category, form#add_subcategory {
-			display:none;
+			
 			margin-bottom:5px;
 		}
 		form#add_category input[type=text], form#add_subcategory input[type=text]{
-			width: 135px;
+			width: 60%;
 			height: 20px;
 			margin-right:5px;
 			padding-left:4px;
@@ -514,4 +515,26 @@ body {
 			-moz-box-shadow: inset 0px 1px 1px rgba(0,0,0,0.1);
 			-webkit-box-shadow: inset 0px 1px 1px rgba(0,0,0,0.1);
 		}
-		
+		select#parent{
+			width:98%;
+			height:24px;
+		}
+		.ajax_loader {
+			margin:40% 48%;
+			top:0;
+			background:#ffffff;
+			width:300px;
+			height:100px;
+			border: 4px solid #C9C9C9;
+			box-shadow: 0px 0px 18px 2px rgba(0,0,0,0.3);
+			border-radius: 12px;
+			text-align:center;
+			vertical-align:middle;
+			display:none;
+		}
+		.ajax_loader p {
+			width:80%;
+			height:80%;
+			margin:11% auto;
+			font-size:220%;
+		}
