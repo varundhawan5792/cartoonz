@@ -74,8 +74,8 @@ function getUrlHash() {
 		case 'dashboard':
 		    loadDashboard(true);
 			break;
-		case 'settings':
-		    
+		case 'files':
+		    loadFiles(true);
 			break;	
 	}
 	
@@ -135,6 +135,7 @@ function loadCategories(bypass){
 		$("button#cancel_add_category").click(function(){
 			$("form#add_category").find("#category").val('');
 			$("form#add_category").find("#url").val('');
+			$("form#add_category").find("#alias").val('');
 			$("select#parent").val('0');
 			$("button#add_category").fadeIn(0);
 			$("button#edit_category").fadeOut(0);
@@ -145,8 +146,10 @@ function loadCategories(bypass){
 }
 function editCategory(id){
 	
+	//window.scrollTo(0,$("#ajaxcontainer").offset().top);
 	$("form#add_category").find("#category").val($("#category_list_"+id).find("#category").text().trim());
 	$("form#add_category").find("#url").val($("#category_list_"+id).find("#url").text().trim());
+	$("form#add_category").find("#alias").val($("#category_list_"+id).find("#alias").text().trim());
 	$("select#parent").val($("#category_list_"+id).find("#parent").find("input").val());
 	$("button#add_category").fadeOut(0);
 	$("form#add_category").fadeIn(50);
@@ -162,14 +165,16 @@ function addEditCategory(id){
 	
 	var cat = $("form#add_category").find("#category").val().trim();
 	var url = $("form#add_category").find("#url").val().trim();
+	var alias = $("form#add_category").find("#alias").val().trim();
 	var parent = $('select#parent').find('option:selected').val();
-
+	if(alias=='NULL')
+		alias='';
 	if(cat.length == 0 || url.length == 0){
 		alert("Man! Don't leave them empty.");
 		return false;
 	}
 	url = encodeURI(url);
-	$.getJSON("../include/do.php?q=add_category&category="+cat+"&url="+url+"&id="+id+"&parent="+parent, 
+	$.getJSON("../include/do.php?q=add_category&category="+cat+"&url="+url+"&id="+id+"&parent="+parent+"&alias="+alias, 
 		function(data){
 			if(data == true){
 				loadCategories(true);
@@ -189,13 +194,16 @@ function addCategory(){
 
 	var cat = $("form#add_category").find("#category").val().trim();
 	var url = $("form#add_category").find("#url").val().trim();
+	var alias = $("form#add_category").find("#alias").val().trim();
 	var parent = $('select#parent').find('option:selected').val();
+	if(alias=='NULL')
+		alias='';
 	if(cat.length == 0 || url.length == 0){
 		alert("Man! Don't leave them empty.");
 		return false;
 	}
 	url = encodeURI(url);
-	$.getJSON("../include/do.php?q=add_category&category="+cat+"&url="+url+"&parent="+parent, 
+	$.getJSON("../include/do.php?q=add_category&category="+cat+"&url="+url+"&parent="+parent+"&alias="+alias, 
 		function(data){
 			
 			if(data == "duplicate"){
@@ -228,6 +236,20 @@ function removeCategory(id){
 		}
 	);
 	return false;
+}
+function loadFiles(bypass){
+	
+	ajaxLoader()
+	refresh_load = false;	
+	if($("li#files").hasClass("selected") && !bypass)
+		return;	
+	doClick("li#files");	
+	$("#ajaxcontainer div").animate({"height":"0", "opacity":"0"}, {"duration":"200"});
+	$("#ajaxcontainer").load("../include/ajax_adm/content_files.php", function(){ 
+		$("#ajaxcontainer div").fadeIn(150);
+		ajaxLoaderRemove();
+	});
+	
 }
 function startUsageLoader(){
 	displayLoad();

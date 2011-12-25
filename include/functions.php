@@ -432,7 +432,7 @@ function load_server_list(){
 	}
 }
 
-function load_category_list($sub = 0){
+function load_category_list($sub = 0, $options = 0){
 	
 	include('connectDB.php');
 	$query = "CREATE TABLE IF NOT EXISTS `base_url` (
@@ -452,19 +452,115 @@ function load_category_list($sub = 0){
 	$cntr=0;
 	while($row = mysql_fetch_array($result)){
 		$cntr++;
+		//<td title='".$row['category']."' style='cursor:pointer;'>Category #$cntr</td>
+		if(empty($row['alias']))
+			$row['alias'] = "NULL";
 		echo "
 		<tr id='category_list_".$row['id']."'>
-			<td title='".$row['category']."' style='cursor:pointer;'>Category #$cntr</td>
 			<td id='parent'><input type='hidden' value='".$row['parent_id']."'></td>
 			<td id='category'>
 				".$row['category']."
 			</td>
 			<td id='url'>
 				".$row['url']."
+			</td>";
+		if($options == 0)	
+			echo "				
+				<td id='alias'>
+					".$row['alias']."
+				</td>
+				<td>	
+					<a href='' onclick='editCategory(".$row['id'].");return false;'><img src='img/icons/icon_edit.png' border=0 style='display:inline;'></a>
+					<a href='' onclick='removeCategory(".$row['id'].");return false;'><img src='img/icons/icon_unapprove.png' border=0></a>
+				</td>
+			</tr>
+			";
+		else	
+			echo "	
+				<td>
+					<a href='' onclick='updateFileDB(".$row['id'].");return false;'><img src='img/icons/icon_warning.png' border=0 style='display:inline;'></a>
+					<a href='' onclick='javascript:;'><img src='img/icons/icon_approve.png' border=0 style='display:none;'></a>
+				</td>
+			</tr>
+			";
+		$query = "SELECT * FROM base_url WHERE parent_id=".$row["id"];
+		$result1 = executeQuery($query);
+		$cntr1 = 0;
+		while($row1 = mysql_fetch_array($result1)){
+			$cntr1 ++;
+			//<td title='".$row1['category']."' style='cursor:pointer;'>&nbsp;&nbsp;&nbsp;Category #$cntr.$cntr1</td>
+			if(empty($row1['alias']))
+			   $row1['alias'] = "NULL";
+			echo "
+			<tr id='category_list_".$row1['id']."' style='color:#BBB;'>
+				
+				<td id='parent'><input type='hidden' value='".$row1['parent_id']."'></td>
+				<td id='category' >
+					".$row1['category']."
+				</td>
+				<td id='url'>
+					".$row1['url']."
+				</td>";
+			if($options == 0)	
+				echo "	
+					<td id='alias'>
+						".$row1['alias']."
+					</td>
+					<td>	
+						<a href='' onclick='editCategory(".$row1['id'].");return false;'><img src='img/icons/icon_edit.png' border=0 style='display:inline;'></a>
+						<a href='' onclick='removeCategory(".$row1['id'].");return false;'><img src='img/icons/icon_unapprove.png' border=0></a>
+					</td>
+				</tr>
+				";
+			else	
+				echo "	
+					<td>
+						<a href='' onclick='updateFileDB(".$row1['id'].");return false;'><img src='img/icons/icon_warning.png' border=0 style='display:inline;'></a>
+						<a href='' onclick='javascript:;'><img src='img/icons/icon_approve.png' border=0 style='display:none;'></a>
+					</td>
+				</tr>
+				";
+		}
+		
+	}
+	if($cntr == 0){
+		echo '<tr id="category_list1">
+			    <td title="Nothing here! :|" style="cursor:pointer;">
+				   Nothing here! :|
+				</td>
+			    <td id="display">
+			    </td>
+			    <td>
+				</td>
+		      </tr>';
+	}
+}
+
+function load_category_status($sub = 0){
+	
+	include('connectDB.php');
+	if($sub == 0)
+	   $query = "SELECT * FROM base_url WHERE parent_id = '0'";
+	else if($sub == 1)
+ 	   $query = "SELECT * FROM base_url WHERE parent_id != '0'";
+	$result = executeQuery($query);
+	$cntr=0;
+	while($row = mysql_fetch_array($result)){
+		$cntr++;
+		//<td title='".$row['category']."' style='cursor:pointer;'>Category #$cntr</td>
+		echo "
+		<tr id='category_list_".$row['id']."'>
+			<td id='parent'><input type='hidden' value='".$row['parent_id']."'></td>
+			<td id='category'>
+				".$row['category']."
 			</td>
+			<td id='url'>
+				".$row['url']."
+			</td>";
+		echo "	
 			<td>
-				<a href='' onclick='editCategory(".$row['id'].");return false;'><img src='img/icons/icon_edit.png' border=0 style='display:inline;'></a>
-				<a href='' onclick='removeCategory(".$row['id'].");return false;'><img src='img/icons/icon_unapprove.png' border=0></a>
+				<a href='' onclick='updateFileDB(".$row['id'].");return false;'><img src='img/icons/icon_warning.png' border=0 style='display:inline;'></a>
+				<a href='' onclick='javascript:;'><img src='img/icons/icon_approve.png' border=0 style='display:none;'></a>
 			</td>
 		</tr>
 		";
@@ -473,19 +569,21 @@ function load_category_list($sub = 0){
 		$cntr1 = 0;
 		while($row1 = mysql_fetch_array($result1)){
 			$cntr1 ++;
+			//<td title='".$row1['category']."' style='cursor:pointer;'>&nbsp;&nbsp;&nbsp;Category #$cntr.$cntr1</td>
 			echo "
 			<tr id='category_list_".$row1['id']."' style='color:#BBB;'>
-				<td title='".$row1['category']."' style='cursor:pointer;'>&nbsp;&nbsp;&nbsp;Category #$cntr.$cntr1</td>
+				
 				<td id='parent'><input type='hidden' value='".$row1['parent_id']."'></td>
-				<td id='category'>
+				<td id='category' >
 					".$row1['category']."
 				</td>
 				<td id='url'>
 					".$row1['url']."
-				</td>
+				</td>";
+			echo "	
 				<td>
-					<a href='' onclick='editCategory(".$row1['id'].");return false;'><img src='img/icons/icon_edit.png' border=0 style='display:inline;'></a>
-					<a href='' onclick='removeCategory(".$row1['id'].");return false;'><img src='img/icons/icon_unapprove.png' border=0></a>
+					<a href='' onclick='updateFileDB(".$row1['id'].");return false;'><img src='img/icons/icon_warning.png' border=0 style='display:inline;'></a>
+					<a href='' onclick='javascript:;'><img src='img/icons/icon_approve.png' border=0 style='display:none;'></a>
 				</td>
 			</tr>
 			";
