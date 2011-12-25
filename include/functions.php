@@ -475,7 +475,7 @@ function load_category_list($sub = 0){
 			$cntr1 ++;
 			echo "
 			<tr id='category_list_".$row1['id']."' style='color:#BBB;'>
-				<td title='".$row1['category']."' style='cursor:pointer;'>Category #$cntr.$cntr1</td>
+				<td title='".$row1['category']."' style='cursor:pointer;'>&nbsp;&nbsp;&nbsp;Category #$cntr.$cntr1</td>
 				<td id='parent'><input type='hidden' value='".$row1['parent_id']."'></td>
 				<td id='category'>
 					".$row1['category']."
