@@ -32,7 +32,22 @@
         </table>
        </div>  
        <div style="float:left;margin-right:40px;width:45%;">
-       		
+       	<table id="cpu_usage">
+            <tr>
+                <th width="100" class="head"><strong>Running:</strong></th>
+                <th width="200" class="head"></th>
+                <th width="50" class="head" ><span id="loader" style="float:right;display:none;"><img src="img/ajax-loader.gif" height="10"></span></th>
+             </tr>
+        	 <tr id="no_process">
+                <td title="No process running." style="cursor:pointer;">
+                   No process running.
+                </td>
+                <td id="display">
+                </td>
+                <td>
+                </td>
+		     </tr>
+        </table>
            
        </div>    
     </div>
