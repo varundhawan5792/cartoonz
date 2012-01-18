@@ -82,118 +82,66 @@ function getDirectory( $path, $basepath, $level = 0, $dbname){
 	// echo "<br/>Files added from <br/>path = '$path' to <br/>database = $dbname";
 } 
 
-class dbOperations{
-	
-	function updateDb($category){
-		
-		getDirectory($row["url"], basename($row["url"]),  '10', 'music');
-	}
-	
-	function getFileList($category){
-		
-		switch($category){
-			case 'music':
-				break;
-			
-		}
-	}
-	
-	function getDirectory( $path, $basepath, $level = 0, $dbname){ 
-		
-		$ignore = array( 'cgi-bin', '.', '..', '.svn' ); 
-		$dh = @opendir( $path ); 
-		while( false !== ( $file = readdir( $dh ) ) ){ 
-			if( !in_array( $file, $ignore ) && isAllowed($file)){ 
-			
-				$spaces = str_repeat( '&nbsp;&nbsp;', ( $level * 2 ) ); 
-				if( is_dir( "$path/$file" ) ){ 
-				   
-				   $basedir = basename($path);
-				   $url = $path.'/'.$file;
-				   //echo "$basedir, $url, $basepath<br/>";		   
-				   $query = "SELECT * FROM {$dbname}_folders WHERE name like \"$file\"";
-				   //echo "$query<br/>";
-				   $result = executeQuery($query);
-				   if(mysql_num_rows($result) == 0)
-				   {
-					   date_default_timezone_set('Asia/Calcutta');
-					   $date = date(filemtime($url)); //"F d Y H:i:s."
-					   if($basedir == $basepath){
-						   $query = "INSERT INTO {$dbname}_folders(base_id, name, date_added) values((SELECT id FROM base_url WHERE name=\"$basedir\"), \"$file\", '$date')";
-					   }
-					   else{
-							$query = "INSERT INTO {$dbname}_folders(base_id, parent_id, name, date_added) values((SELECT id FROM base_url WHERE name=\"$basedir\"), (SELECT id FROM {$dbname}_folders as {$dbname} WHERE name=\"$basedir\"), \"$file\", '$date')";   
-							//echo "$query<br/>";
-					   }
-					   executeQuery($query);
-				   }
-				   getDirectory( "$path/$file", $basepath, ($level+1), $dbname);
-				   
-				} 
-				else { 
-	
-				   $basedir = basename($path);
-				   $dirname = basename(dirname($path));
-				   
-				   $parent1 = $basedir;
-				   $parent2 = $dirname;
-				   if($parent2 == $basepath){
-						$query = "SELECT id FROM base_url WHERE name=\"$parent2\"";
-						$result = executeQuery($query);
-						$row = mysql_fetch_array($result);
-						$base_id = $row["id"];
-				   }
-					else
-						$base_id = "NULL";
-				   
-				   if($parent2 != $basepath)
-					   $query_parent = "SELECT id FROM {$dbname}_folders WHERE name=\"$parent1\" and parent_id=(SELECT id FROM {$dbname}_folders WHERE name=\"$parent2\")";
-				   else   
-					   $query_parent = "SELECT id FROM {$dbname}_folders WHERE name=\"$parent1\" and parent_id is NULL";
-				   $query = "SELECT * FROM {$dbname}_files WHERE parent_id=($query_parent) and name=\"$file\"";
-				   $result = executeQuery($query);
-				   if(mysql_num_rows($result) == 0)
-				   {
-					   //$query_parent = "SELECT id FROM {$dbname}_folders WHERE name=\"$parent1\" and parent_id=(SELECT id FROM {$dbname}_folders WHERE name=\"$parent2\")";
-					   $query = "INSERT INTO {$dbname}_files(parent_id, name) values(($query_parent),\"$file\")";
-					   executeQuery($query);
-					   //echo "$file<br/>";
-				   }
-				} 
-			} 
-		} 
-		closedir( $dh ); 
-		// Close the directory handle 
-		// echo "<br/>Files added from <br/>path = '$path' to <br/>database = $dbname";
-	} 
-	
-	function shortText($text, $length) {
-		if( strlen($text) > $length ) return substr(preg_replace("/(<\/?)(\w+)([^>]*>)/", "", $text), 0, $length)."...";
-		return preg_replace("/(<\/?)(\w+)([^>]*>)/", "", $text);
-	}
-	
-	function writeFile($file, $data, $mode="a+"){
-		$fp = fopen($file, $mode);
-		flock($fp, LOCK_EX);
-		$i = 0;
-		fwrite($fp, $data);
-		flock($fp, LOCK_UN);
-		fclose($fp);
-	}
-	
-	function fileRead($dataFile){
-		
-		  $fp = fopen($dataFile,"r");
-		  $temp="";
-		  while(!feof($fp))
-		  {
-			$temp += fgets($fp);
-		  }
-		  fclose($fp);
-		  return $temp;
-	}
-}
 
+function listdir($dbname, $base, $start_dir='.') {
+  $files = array();
+  if (is_dir($start_dir)) {
+    $fh = opendir($start_dir);
+    while (($file = readdir($fh)) !== false) {
+      # loop through the files, skipping . and .., and recursing if necessary
+       if (!isAllowed($file)) continue;
+	   echo basename($start_dir)."--";
+	   if(basename($start_dir) != $base){
+	   		if(basename(dirname($start_dir)) != $base)
+				$query = "SELECT * FROM {$dbname}_folders WHERE name like \"$file\" and parent_id=(SELECT id FROM {$dbname}_folders WHERE name=\"".basename($start_dir)."\" and parent_id=(SELECT id FROM {$dbname}_folders WHERE name=\"".basename(dirname($start_dir))."\"))";
+			else
+				$query = "SELECT * FROM {$dbname}_folders WHERE name like \"$file\" and parent_id=(SELECT id FROM {$dbname}_folders WHERE name=\"".basename($start_dir)."\" and parent_id=NULL)";
+	   }
+	   else
+	   		$query = "SELECT * FROM {$dbname}_folders WHERE name like \"$file\" and parent_id=NULL";
+	   echo "$query<br/>";
+	   $result = executeQuery($query);
+	   if(mysql_num_rows($result) == 0)
+	   {
+		  if (!isAllowed($file)) continue;
+		  $filepath = $start_dir . '/' . $file;
+		  if ( is_dir($filepath) ){
+			$date = date(filemtime($filepath));
+			if(basename($start_dir) != $base){
+			  //echo "<tr><td>".basename(dirname($start_dir))."</td><td>".basename($start_dir)."</td><td> $file </td></tr>";
+			  
+			  $query = "INSERT INTO {$dbname}_folders(base_id, parent_id, name, date_added) values((SELECT id FROM base_url WHERE url like \"%$base%\"), (SELECT id FROM {$dbname}_folders as {$dbname} WHERE name=\"".basename($start_dir)."\"), \"$file\", '$date')";
+			}
+			else{
+				$query = "INSERT INTO {$dbname}_folders(base_id, name, date_added) values((SELECT id FROM base_url WHERE url like \"%$base%\"), \"$file\", '$date')";
+			}
+			executeQuery($query);
+			$files = array_merge($files, listdir($dbname, $base, $filepath));
+		  }
+		  else{
+			$date = date(filemtime($filepath));
+			//echo "<tr><td>".basename(dirname($start_dir))."</td><td>".basename($start_dir)."</td><td> $file </td></tr>";
+			if(basename(dirname($start_dir)) != $base){
+				$query_parent = "SELECT id FROM {$dbname}_folders WHERE name=\"".basename($start_dir)."\" and parent_id=(SELECT id FROM {$dbname}_folders WHERE name=\"".basename(dirname($start_dir))."\")";
+			}
+			else{
+				$query_parent = "SELECT id FROM {$dbname}_folders WHERE name=\"".basename($start_dir)."\" and parent_id is NULL";
+			}
+			$query = "INSERT INTO {$dbname}_files(parent_id, name) values(($query_parent),\"$file\")";
+			executeQuery($query);
+			array_push($files, $filepath);
+		  }
+	  }
+    }
+    closedir($fh);
+  } else {
+    # false if the function was called with an invalid non-directory argument
+    $files = false;
+  }
+
+  return $files;
+
+}
 
 function array_put_to_position(&$array, $object, $position, $name = null)
 {
@@ -218,10 +166,10 @@ function array_put_to_position(&$array, $object, $position, $name = null)
         return $array;
 }
 
-function get_data($url)
+function get_data($url, $timeout = 50)
 {
 	$ch = curl_init();
-	curl_setopt($ch, CURLOPT_TIMEOUT, 100);
+	curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
 	curl_setopt($ch, CURLOPT_URL, $url);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 	$data = curl_exec($ch);
@@ -264,7 +212,7 @@ function fileRead($dataFile){
 
 function isAllowed($read)
 {
-	if($read=='.' || $read=='..' || $read=='createzip.php' || $read=='CreateZipFile.inc.php' || $read=='D0Wl0Ad3d bY dANkY' || $read=='D0Wl0Ad3d bY CaRtOoNz' || $read=='AlbumArtSmall.jpg' || $read=='Folder.jpg' || $read=='desktop.ini' || strpos($read,'.db')==true || strpos($read,'AlbumArt_')==true || strpos($read,'.zip')==true)
+	if($read=='.' || $read=='..' || $read=='createzip.php' || $read=='CreateZipFile.inc.php' || $read=='D0Wl0Ad3d bY dANkY' || $read=='D0Wl0Ad3d bY CaRtOoNz' || $read=='AlbumArtSmall.jpg' || $read=='Folder.jpg' || $read=='desktop.ini' || strpos($read,'.db')==true || strpos($read,'AlbumArt')==true || strpos($read,'AlbumArt_')==true || strpos($read,'.zip')==true  || strpos($read,'.nfo')==true)
 		return false;
     else		
 		return true;
