@@ -1,0 +1,77 @@
+@media screen {
+@font-face {
+  font-family: 'Cuprum';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Cuprum'), url('../fonts/cuprum.woff') format('woff'),
+  						url('../fonts/Forque-webfont.eot') format('embedded-opentype'),
+         				url('../fonts/Forque-webfont.svg') format('svg');
+}
+
+@font-face {
+  font-family: 'Sansation';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Sansation'), url('../fonts/sansation.woff') format('woff'),
+  						url('../fonts/sansation.eot') format('embedded-opentype'),
+         				url('../fonts/sansation.svg') format('svg');
+}
+
+@font-face {
+  font-family: 'Enigmatic';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Enigmatic'), url('../fonts/enigmatic.woff') format('woff'),
+  						url('../fonts/enigmatic.eot') format('embedded-opentype'),
+         				url('../fonts/enigmatic.svg') format('svg');
+}
+
+@font-face {
+  font-family: 'Droid';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Droid'), url('../fonts/droid.woff') format('woff'),
+  						url('../fonts/Forque-webfont.eot') format('embedded-opentype'),
+         				url('../fonts/Forque-webfont.svg') format('svg');
+}
+
+@font-face {
+  font-family: 'Armata';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Armata'), url('../fonts/armata.woff') format('woff'),
+  						url('../fonts/Forque-webfont.eot') format('embedded-opentype'),
+         				url('../fonts/Forque-webfont.svg') format('svg');
+}
+
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Roboto'), url('../fonts/roboto.woff') format('woff'),
+  						url('../fonts/roboto.eot') format('embedded-opentype'),
+         				url('../fonts/roboto.svg') format('svg');
+}
+
+
+@font-face {
+  font-family: 'RobotoCondensed';
+  font-style: normal;
+  font-weight: normal;
+  src: local('RobotoCondensed'), url('../fonts/robotoc.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Sertig';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Sertig'), url('../fonts/sertig.otf') format('otf');
+}
+
+@font-face {
+  font-family: 'Colab';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Colab'), url('../fonts/colab.woff') format('woff');
+}
+}
