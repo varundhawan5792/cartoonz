@@ -56,29 +56,39 @@ else if($q == "get_music_files_list"){
 		$parent_id = $_GET["parent"];
 	
 	$arr = array();
-	$result = executeQuery("SELECT * FROM music_folders WHERE parent_id=$parent_id");
-	while($row = mysql_fetch_array($result)){	
-			array_put_to_position($row, "folder", 0, "type");
-			$arr['query'][] = $row;
-	}
-	$result = executeQuery("SELECT * FROM music_files WHERE parent_id=$parent_id");
-	while($row = mysql_fetch_array($result)){	
-			array_put_to_position($row, "file", 0, "type");
-			$arr['query'][] = $row;
+	$result = executeQuery("SELECT * FROM music_folders WHERE id=$parent_id");
+	$row = mysql_fetch_array($result);
+	$folder_name = $row["name"];
+	$result = executeQuery("SELECT * FROM base_url WHERE category='Music'");
+	$row = mysql_fetch_array($result);
+	$url = $row["url"]."/".$folder_name;
+	$files = scandir($url);
+	$id = 1;
+	foreach($files as $this_file) {
+		if(!isAllowed($this_file))
+				continue;
+		if( is_dir("$url/$this_file" ) ) {
+			$temp = array("id" => $id++, "name" => $this_file, "type" => "folder");
+			$arr['query'][] = $temp;
+		}
+		else{ 
+			$temp = array("id" => $id++, "name" => $this_file, "type" => "file");
+			$arr['query'][] = $temp;
+		}
 	}
 	echo json_encode($arr);
 }
 else if($q == "update_folder_db"){
-	
+	error_reporting(0);
 	if($permission == FORBIDDEN)
 		return;
-	if(!empty($_GET['base_id']) && !empty($_GET['dbname'])){
+	if(!empty($_GET['base_id'])){
 		$result = executeQuery("SELECT * from base_url WHERE id=".$_GET['base_id']);
 		$row = mysql_fetch_array($result);
 		$url = $row["url"];
-		$name = $_GET["dbname"];
+		$dbname = $row["dbname"];
 		$query = "
-		CREATE TABLE IF NOT EXISTS `".$name."_folders` (
+		CREATE TABLE IF NOT EXISTS `".$dbname."_folders` (
 		  `id` bigint(20) NOT NULL AUTO_INCREMENT,
 		  `base_id` int(11) DEFAULT NULL,
 		  `parent_id` int(20) DEFAULT NULL,
@@ -88,24 +98,25 @@ else if($q == "update_folder_db"){
 		  PRIMARY KEY (`id`)
 		) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;";
 		executeQuery($query);
-		$query = "
-		CREATE TABLE IF NOT EXISTS `".$name."_files` (
-		  `id` int(20) NOT NULL AUTO_INCREMENT,
-		  `parent_id` int(20) NOT NULL,
-		  `name` varchar(200) NOT NULL,
-		  PRIMARY KEY (`id`)
-		) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;";
-		executeQuery($query);
-		echo "$name, ".basename($url).", $url";
 		set_time_limit(9999);
-		$files = listdir($name, basename($url), $url);
+		include("php_file_tree.php");
+		$allowed_extensions = array("mp3", "jpg", "jpeg", "png", "flac", "mkv", "avi", "wmv");
+		php_file_tree( $url, $dbname, $allowed_extensions);
+		//$files = listdir($name, basename($url), $url);
 		//getDirectory($url, basename($url),  '10', $name);
+		date_default_timezone_set('Asia/Calcutta');
+		$date = date(filemtime($url)); //"F d Y H:i:s."
+		executeQuery("DELETE FROM db_status WHERE base_id=".$_GET['base_id']);
+		$mod_date = getLastModified($url);
+		executeQuery("INSERT INTO db_status VALUES('".$_GET['base_id']."','1','$mod_date')");
 		set_time_limit(5);
+		
 		echo "true";
 	}
 	else{
 		echo 'false';
 	}
+	error_reporting(NULL);
 }
 else if($q == "get_server_list"){
 	

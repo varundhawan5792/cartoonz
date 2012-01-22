@@ -43,9 +43,7 @@ function loadMusic(){
 				if(cntr == 0){
 					setTimeout(function(){
 						$("#lane2").find("#loader").animate({"height":"0", "opacity":"0"}, 200).fadeOut(0);
-						$("#form").addClass("form_vis");
-						$("#form").animate({"marginTop":"0px"}, 500, "linear");
-						$("#form").fadeIn(0);
+						
 						doClick();
 						$("input").focus(function(){
 							if($(this).val() == $(this).attr("alt"))
@@ -76,7 +74,7 @@ function loadMusic(){
 
 function loadMusicFiles(parent){
 	
-	alert(parent);
+	//alert(parent);
 	target = $("#lane3").find("#other_list");
 	$(target).html('');
 	var cntr=0, time=0;
@@ -87,13 +85,7 @@ function loadMusicFiles(parent){
 			data = data.query;
 			data1 = data;
 			$(data).each(function(){
-				if(cntr == 0){
-					setTimeout(function(){
-						
-						doClick();
-						
-					}, time);
-				}
+
 				var id = $(this)[0].id;
 				var name = $(this)[0].name;
 				var type = $(this)[0].type;

@@ -8,80 +8,42 @@ echo $row["url"].', '. basename($row["url"]);
 getDirectory($row["url"], basename($row["url"]),  '10', 'music');
 */
 
+//getLastModified("X:/wamp/www/songs");
 function get_parent_path(){
 	chdir('..');
 	return getcwd();
 }
 
-function getDirectory( $path, $basepath, $level = 0, $dbname){ 
-		
-	$ignore = array( 'cgi-bin', '.', '..', '.svn' ); 
-	$dh = @opendir( $path ); 
-	while( false !== ( $file = readdir( $dh ) ) ){ 
-		if( !in_array( $file, $ignore ) && isAllowed($file)){ 
-		
-			$spaces = str_repeat( '&nbsp;&nbsp;', ( $level * 2 ) ); 
-			if( is_dir( "$path/$file" ) ){ 
-			   
-			   $basedir = basename($path);
-			   $url = $path.'/'.$file;
-			   //echo "$basedir, $url, $basepath<br/>";		   
-			   $query = "SELECT * FROM {$dbname}_folders WHERE name like \"$file\"";
-			   //echo "$query<br/>";
-			   $result = executeQuery($query);
-			   if(mysql_num_rows($result) == 0)
-			   {
-				   date_default_timezone_set('Asia/Calcutta');
-				   $date = date(filemtime($url)); //"F d Y H:i:s."
-				   if($basedir == $basepath){
-					   $query = "INSERT INTO {$dbname}_folders(base_id, name, date_added) values((SELECT id FROM base_url WHERE name=\"$basedir\"), \"$file\", '$date')";
-				   }
-				   else{
-						$query = "INSERT INTO {$dbname}_folders(base_id, parent_id, name, date_added) values((SELECT id FROM base_url WHERE name=\"$basedir\"), (SELECT id FROM {$dbname}_folders as {$dbname} WHERE name=\"$basedir\"), \"$file\", '$date')";   
-						//echo "$query<br/>";
-				   }
-				   executeQuery($query);
-			   }
-			   getDirectory( "$path/$file", $basepath, ($level+1), $dbname);
-			   
-			} 
-			else { 
+function getUpdateDate($base_id){
+	$result = executeQuery("SELECT date FROM db_status WHERE base_id=$base_id");
+	$row = mysql_fetch_array($result);
+	return $row["date"];
+}
 
-			   $basedir = basename($path);
-			   $dirname = basename(dirname($path));
-			   
-			   $parent1 = $basedir;
-			   $parent2 = $dirname;
-			   if($parent2 == $basepath){
-					$query = "SELECT id FROM base_url WHERE name=\"$parent2\"";
-					$result = executeQuery($query);
-					$row = mysql_fetch_array($result);
-					$base_id = $row["id"];
-			   }
-				else
-					$base_id = "NULL";
-			   
-			   if($parent2 != $basepath)
-				   $query_parent = "SELECT id FROM {$dbname}_folders WHERE name=\"$parent1\" and parent_id=(SELECT id FROM {$dbname}_folders WHERE name=\"$parent2\")";
-			   else   
-				   $query_parent = "SELECT id FROM {$dbname}_folders WHERE name=\"$parent1\" and parent_id is NULL";
-			   $query = "SELECT * FROM {$dbname}_files WHERE parent_id=($query_parent) and name=\"$file\"";
-			   $result = executeQuery($query);
-			   if(mysql_num_rows($result) == 0)
-			   {
-				   //$query_parent = "SELECT id FROM {$dbname}_folders WHERE name=\"$parent1\" and parent_id=(SELECT id FROM {$dbname}_folders WHERE name=\"$parent2\")";
-				   $query = "INSERT INTO {$dbname}_files(parent_id, name) values(($query_parent),\"$file\")";
-				   executeQuery($query);
-				   //echo "$file<br/>";
-			   }
-			} 
-		} 
-	} 
-	closedir( $dh ); 
-	// Close the directory handle 
-	// echo "<br/>Files added from <br/>path = '$path' to <br/>database = $dbname";
-} 
-
+function getLastModified($dir){
+	
+	$cnt=0;
+	$date='';
+	$name='';
+	if ($handle = opendir($dir)) {
+		while (false !== ($entry = readdir($handle))) {
+			if ($entry != "." && $entry != "..") {
+				if($cnt == 0){
+					$date = date(filemtime($dir.'/'.$entry));
+					$cnt++;
+				}
+				if(date(filemtime($dir.'/'.$entry)) > $date){
+					$name = $entry;
+				    $date = date(filemtime($dir.'/'.$entry));
+				}
+				//echo "$dir/$entry    ".date(filemtime($dir.'/'.$entry))."<br/>";
+			}
+		}
+    	closedir($handle);
+	}
+	//echo ",,".$dir.", ".$name;
+	return $date;
+}
 
 function listdir($dbname, $base, $start_dir='.') {
   $files = array();
@@ -95,10 +57,10 @@ function listdir($dbname, $base, $start_dir='.') {
 	   		if(basename(dirname($start_dir)) != $base)
 				$query = "SELECT * FROM {$dbname}_folders WHERE name like \"$file\" and parent_id=(SELECT id FROM {$dbname}_folders WHERE name=\"".basename($start_dir)."\" and parent_id=(SELECT id FROM {$dbname}_folders WHERE name=\"".basename(dirname($start_dir))."\"))";
 			else
-				$query = "SELECT * FROM {$dbname}_folders WHERE name like \"$file\" and parent_id=(SELECT id FROM {$dbname}_folders WHERE name=\"".basename($start_dir)."\" and parent_id=NULL)";
+				$query = "SELECT * FROM {$dbname}_folders WHERE name like \"$file\" and parent_id=(SELECT id FROM {$dbname}_folders WHERE name=\"".basename($start_dir)."\" and parent_id is NULL)";
 	   }
 	   else
-	   		$query = "SELECT * FROM {$dbname}_folders WHERE name like \"$file\" and parent_id=NULL";
+	   		$query = "SELECT * FROM {$dbname}_folders WHERE name like \"$file\" and parent_id is NULL";
 	   echo "$query<br/>";
 	   $result = executeQuery($query);
 	   if(mysql_num_rows($result) == 0)
@@ -128,8 +90,31 @@ function listdir($dbname, $base, $start_dir='.') {
 				$query_parent = "SELECT id FROM {$dbname}_folders WHERE name=\"".basename($start_dir)."\" and parent_id is NULL";
 			}
 			$query = "INSERT INTO {$dbname}_files(parent_id, name) values(($query_parent),\"$file\")";
+			echo $query."<br/>";
 			executeQuery($query);
-			array_push($files, $filepath);
+			//array_push($files, $filepath);
+		  }
+	  }
+	  else{
+		  $row = mysql_fetch_array($result);
+		  $date_in_db = $row["date_added"];
+		  $date_now = date(filemtime($filepath));
+		  if($date_in_db != $date_now){
+			  
+			  executeQuery("DELETE FROM {$dbname}_files WHERE parent_id=".$row['id']);
+			  executeQuery("DELETE FROM {$dbname}_folders WHERE id=".$row['id']);
+			  $date = date(filemtime($filepath));
+				if(basename($start_dir) != $base){
+				  //echo "<tr><td>".basename(dirname($start_dir))."</td><td>".basename($start_dir)."</td><td> $file </td></tr>";
+				  
+				  $query = "INSERT INTO {$dbname}_folders(base_id, parent_id, name, date_added) values((SELECT id FROM base_url WHERE url like \"%$base%\"), (SELECT id FROM {$dbname}_folders as {$dbname} WHERE name=\"".basename($start_dir)."\"), \"$file\", '$date')";
+				}
+				else{
+					$query = "INSERT INTO {$dbname}_folders(base_id, name, date_added) values((SELECT id FROM base_url WHERE url like \"%$base%\"), \"$file\", '$date')";
+				}
+				executeQuery($query);
+				listdir($dbname, $base, $filepath);
+			  
 		  }
 	  }
     }
@@ -212,7 +197,7 @@ function fileRead($dataFile){
 
 function isAllowed($read)
 {
-	if($read=='.' || $read=='..' || $read=='createzip.php' || $read=='CreateZipFile.inc.php' || $read=='D0Wl0Ad3d bY dANkY' || $read=='D0Wl0Ad3d bY CaRtOoNz' || $read=='AlbumArtSmall.jpg' || $read=='Folder.jpg' || $read=='desktop.ini' || strpos($read,'.db')==true || strpos($read,'AlbumArt')==true || strpos($read,'AlbumArt_')==true || strpos($read,'.zip')==true  || strpos($read,'.nfo')==true)
+	if($read=='.' || $read=='..' || $read=='createzip.php' || $read=='CreateZipFile.inc.php' || $read=='D0Wl0Ad3d bY dANkY' || $read=='D0Wl0Ad3d bY CaRtOoNz' || $read=='AlbumArtSmall.jpg' || $read=='Folder.jpg' || $read=='desktop.ini' || strpos($read,'.db')==true || strpos($read,'AlbumArt')==true || strpos($read,'AlbumArt_')==true || strpos($read,'AlbumArt_{')==true || strpos($read,'.zip')==true  || strpos($read,'.nfo')==true)
 		return false;
     else		
 		return true;
@@ -496,6 +481,19 @@ function load_category_status($sub = 0){
 	$cntr=0;
 	while($row = mysql_fetch_array($result)){
 		$cntr++;
+		$url = $row["url"];
+		$last_updated = getUpdateDate($row["id"]);
+		$last_modified = getLastModified($row["url"]);
+		if($last_modified > $last_updated)
+		   $error_flag = 1;
+		else
+		   $error_flag = 0;
+		$temp = executeQuery("SELECT * FROM base_url WHERE parent_id=".$row["id"]);
+		if(mysql_num_rows($temp) > 0)
+			$tool_flag = 0;
+		else
+			$tool_flag = 1;
+		//echo "$last_updated, $last_modified, $error_flag<br/>";  
 		//<td title='".$row['category']."' style='cursor:pointer;'>Category #$cntr</td>
 		echo "
 		<tr id='category_list_".$row['id']."'>
@@ -506,11 +504,24 @@ function load_category_status($sub = 0){
 			<td id='url'>
 				".$row['url']."
 			</td>";
-		echo "	
-			<td>
-				<a href='' onclick='updateFileDB(".$row['id'].");return false;'><img src='img/icons/icon_warning.png' border=0 style='display:inline;'></a>
-				<a href='' onclick='javascript:;'><img src='img/icons/icon_approve.png' border=0 style='display:none;'></a>
-			</td>
+		if($tool_flag == 1){
+			echo "	
+				<td>";
+			if($error_flag == 1)
+				echo "<img id='error_".$row['parent_id']."_".$row['id']."' src='img/icons/icon_warning.png' border=0 style='cursor:pointer;display:inline;' onclick='updateFileDB(".$row['id'].");return false;'>
+					  <img id='done_".$row['parent_id']."_".$row['id']."' src='img/icons/icon_approve.png' border=0 style='display:none;'>";
+			else
+				echo "<img id='error_".$row['parent_id']."_".$row['id']."' src='img/icons/icon_warning.png' border=0 style='cursor:pointer;display:none;' onclick='updateFileDB(".$row['id'].");return false;'>
+					  <img id='done_".$row['parent_id']."_".$row['id']."' src='img/icons/icon_approve.png' border=0 style='display:inline;'>";
+			echo "	
+					<img id='loader_".$row['parent_id']."_".$row['id']."' src='img/ajax-loader.gif' height='15' style='display:none;'>
+			";
+			echo "
+				</td>";
+		}
+		else
+			echo "<td></td>";
+		echo"
 		</tr>
 		";
 		$query = "SELECT * FROM base_url WHERE parent_id=".$row["id"];
@@ -518,6 +529,14 @@ function load_category_status($sub = 0){
 		$cntr1 = 0;
 		while($row1 = mysql_fetch_array($result1)){
 			$cntr1 ++;
+			$url = $row1["url"];
+			$last_updated = getUpdateDate($row1["id"]);
+			$last_modified = getLastModified($row1["url"]);
+			if($last_modified > $last_updated)
+			   $error_flag = 1;
+			else
+			   $error_flag = 0;
+			//echo "$last_updated, $last_modified, $error_flag<br/>";
 			//<td title='".$row1['category']."' style='cursor:pointer;'>&nbsp;&nbsp;&nbsp;Category #$cntr.$cntr1</td>
 			echo "
 			<tr id='category_list_".$row1['id']."' style='color:#BBB;'>
@@ -530,10 +549,18 @@ function load_category_status($sub = 0){
 					".$row1['url']."
 				</td>";
 			echo "	
-				<td>
-					<a href='' onclick='updateFileDB(".$row1['id'].");return false;'><img src='img/icons/icon_warning.png' border=0 style='display:inline;'></a>
-					<a href='' onclick='javascript:;'><img src='img/icons/icon_approve.png' border=0 style='display:none;'></a>
-				</td>
+				<td>";
+			if($error_flag == 1)
+				echo "<img id='error_".$row1['parent_id']."_".$row1['id']."' src='img/icons/icon_warning.png' border=0 style='cursor:pointer;display:inline;' onclick='updateFileDB(".$row1['id'].");return false;'>
+					  <img id='done_".$row1['parent_id']."_".$row1['id']."' src='img/icons/icon_approve.png' border=0 style='display:none;'>";
+			else
+				echo "<img id='error_".$row1['parent_id']."_".$row1['id']."' src='img/icons/icon_warning.png' border=0 style='cursor:pointer;display:none;' onclick='updateFileDB(".$row1['id'].");return false;'>
+					  <img id='done_".$row1['parent_id']."_".$row1['id']."' src='img/icons/icon_approve.png' border=0 style='display:inline;'>";
+			echo "	
+					<img id='loader_".$row1['parent_id']."_".$row1['id']."' src='img/ajax-loader.gif' height='15' style='display:none;'>
+			";
+			echo "
+			</td>
 			</tr>
 			";
 		}
