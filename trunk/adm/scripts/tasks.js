@@ -144,6 +144,20 @@ function loadCategories(bypass){
 	});
 	
 }
+function loadFiles(bypass){
+	
+	ajaxLoader()
+	refresh_load = false;	
+	if($("li#files").hasClass("selected") && !bypass)
+		return;	
+	doClick("li#files");	
+	$("#ajaxcontainer div").animate({"height":"0", "opacity":"0"}, {"duration":"200"});
+	$("#ajaxcontainer").load("../include/ajax_adm/content_files.php", function(){ 
+		$("#ajaxcontainer div").fadeIn(150);
+		ajaxLoaderRemove();
+	});
+	
+}
 function editCategory(id){
 	
 	//window.scrollTo(0,$("#ajaxcontainer").offset().top);
@@ -237,19 +251,47 @@ function removeCategory(id){
 	);
 	return false;
 }
-function loadFiles(bypass){
+function updateFileDB(id){
 	
-	ajaxLoader()
-	refresh_load = false;	
-	if($("li#files").hasClass("selected") && !bypass)
-		return;	
-	doClick("li#files");	
-	$("#ajaxcontainer div").animate({"height":"0", "opacity":"0"}, {"duration":"200"});
-	$("#ajaxcontainer").load("../include/ajax_adm/content_files.php", function(){ 
-		$("#ajaxcontainer div").fadeIn(150);
-		ajaxLoaderRemove();
+	var parent_id = $("#category_list_"+id).find("#parent").find("input").val();
+	if(!confirm("Are you sure you want to refresh the database?"))
+		return false;
+	$("#loader_"+parent_id+"_"+id).fadeIn(0);
+	$("#error_"+parent_id+"_"+id).fadeOut(0);
+	$.ajax({
+	  url: "../include/do.php?q=update_folder_db&base_id="+id,
+	  dataType: 'json',
+	  success: function(data){
+					//alert(data);
+					if(data == true){
+						$("#done_"+parent_id+"_"+id).fadeIn(0);
+						$("#loader_"+parent_id+"_"+id).fadeOut(0);
+					}
+					else{
+						alert(data+": Error! Category not removed.");
+						$("#error_"+parent_id+"_"+id).fadeIn(0);
+						$("#loader_"+parent_id+"_"+id).fadeOut(0);
+					}
+				},
+	  timeout: 30000 //30 second timeout
 	});
-	
+	/*
+	$.getJSON("../include/do.php?q=update_folder_db&base_id="+id, 
+		function(data){
+			alert(data);
+			if(data == true){
+				$("#done_"+parent_id+"_"+id).fadeIn(0);
+				$("#loader_"+parent_id+"_"+id).fadeOut(0);
+			}
+			else{
+				alert(data+": Error! Category not removed.");
+				$("#error_"+parent_id+"_"+id).fadeIn(0);
+				$("#loader_"+parent_id+"_"+id).fadeOut(0);
+			}
+		}
+	);
+	*/
+	return false;	
 }
 function startUsageLoader(){
 	displayLoad();

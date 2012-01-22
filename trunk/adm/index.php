@@ -60,8 +60,11 @@ include_once('../include/functions.php');
         
         <!-- Content Box Start -->
         <div class="contentcontainer">
+            
             <div class="headings alt">
-                <h2>Usages & Stats</h2>
+                <h2>Usages & Stats
+                <span style="margin-left:10px; font-style:italic;float:right;font-weight:normal;font-size:14px;">Logged in from <b><?php echo $_SERVER['REMOTE_ADDR']; ?></b></span>
+                </h2>
             </div>
             <div class="contentbox">
             	

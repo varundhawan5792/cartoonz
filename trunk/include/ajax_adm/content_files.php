@@ -10,7 +10,7 @@
     <div class="contentbox">
         
       <div style="float:left;margin-bottom:30px;margin-right:40px;">
-        <table id="cpu_usage">
+        <table>
             <tr>
                 <th width="0" class="head"></th>
                 <th width="60" class="head"><strong>Categories:</strong></th>
@@ -32,7 +32,7 @@
         </table>
        </div>  
        <div style="float:left;margin-right:40px;width:45%;">
-       	<table id="cpu_usage">
+       	<table>
             <tr>
                 <th width="100" class="head"><strong>Running:</strong></th>
                 <th width="200" class="head"></th>

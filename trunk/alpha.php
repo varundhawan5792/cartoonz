@@ -9,7 +9,32 @@
 <script type="text/javascript" src="js/jquery-ui-1.8.16.custom.min.js"></script>
 <script type="text/javascript" src="js/jquery.min.js"></script>
 <script type="text/javascript" src="js/functions.js"></script>  
- 
+ <script type="text/javascript">
+$(document).ready(function(){
+	var height, offset = $("#breadcrumb").offset().top + $("#breadcrumb").height();
+	if( typeof( window.innerWidth ) == 'number' )
+		height = window.innerHeight - offset;
+	else if( document.documentElement && document.documentElement.clientHeight )
+		height = document.documentElement.clientHeight - offset;
+	else if( document.body && document.body.clientHeight )
+		height = document.body.clientHeight - offset;
+	//alert(height);
+	$("#lane2 #container").height(0.93*height);
+	$("#lane3 #container").height(0.93*height);
+	loadMusic();
+});
+$(window).resize(function(){
+	var height, offset = $("#breadcrumb").offset().top + $("#breadcrumb").height();
+	if( typeof( window.innerWidth ) == 'number' )
+		height = window.innerHeight - offset;
+	else if( document.documentElement && document.documentElement.clientHeight )
+		height = document.documentElement.clientHeight - offset;
+	else if( document.body && document.body.clientHeight )
+		height = document.body.clientHeight - offset;
+	//alert(height);
+	$("#container").height(0.93*height);
+})
+</script>
 </head>
 
 <body>
